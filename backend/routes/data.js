@@ -92,24 +92,53 @@ router.post('/businesses/:businessId/upload-excel', authenticateToken, upload.ar
                 const sheetResults = [];
                 for (const sheetName of workbook.SheetNames) {
                     const worksheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    // Parse with defval to keep empty cells as empty strings
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
 
                     if (jsonData.length === 0) continue;
 
                     // Create collection name: businessId_sheetName
                     const collectionName = `${businessId}_${sheetName.replace(/[^a-zA-Z0-9_]/g, '_')}`;
 
-                    // Convert array of arrays to array of objects
-                    const headers = jsonData[0];
+                    // Get headers from first row - keep exactly as in Excel
+                    const headers = jsonData[0].map((h, idx) => {
+                        const headerStr = String(h || '').trim();
+                        // If header is empty, use column letter (A, B, C, etc.)
+                        return headerStr || `Column_${String.fromCharCode(65 + idx)}`;
+                    });
+                    
+                    if (headers.length === 0) continue; // Skip if no columns
+                    
                     const rows = jsonData.slice(1);
 
-                    const documents = rows.map(row => {
-                        const doc = {};
-                        headers.forEach((header, index) => {
-                            doc[header] = row[index] || null;
+                    // Filter out ONLY completely empty rows (all columns are empty)
+                    const documents = rows
+                        .filter(row => {
+                            // Check if ALL columns are empty - if so, skip this row
+                            const allEmpty = row.every(cell => 
+                                cell === null || 
+                                cell === undefined || 
+                                String(cell).trim() === ''
+                            );
+                            return !allEmpty; // Keep row if at least one column has data
+                        })
+                        .map((row, rowIndex) => {
+                            const doc = {
+                                _rowNumber: rowIndex + 2 // Store original row number from Excel (1-indexed, +1 for header)
+                            };
+                            headers.forEach((header, index) => {
+                                const value = row[index];
+                                // Store exactly as in Excel - empty cells as empty string, preserve all values
+                                if (value === null || value === undefined) {
+                                    doc[header] = '';
+                                } else if (typeof value === 'number') {
+                                    doc[header] = value; // Keep numbers as numbers
+                                } else {
+                                    doc[header] = String(value); // Convert to string but preserve content
+                                }
+                            });
+                            return doc;
                         });
-                        return doc;
-                    });
 
                     // Store in MongoDB
                     const db = mongoose.connection.db;
