@@ -10,6 +10,7 @@ const uploadsRoutes = require('./routes/uploads');
 const { router: langchainRoutes } = require('./routes/langchain');
 const { router: ragRoutes } = require('./routes/rag');
 const businessRoutes = require('./routes/business');
+const dataRoutes = require('./routes/data');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -40,6 +41,7 @@ app.use('/api/uploads', uploadsRoutes);
 app.use('/api/langchain', langchainRoutes);
 app.use('/api/rag', ragRoutes);
 app.use('/api/businesses', businessRoutes);
+app.use('/api/data', dataRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
