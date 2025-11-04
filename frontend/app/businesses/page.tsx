@@ -24,8 +24,6 @@ export default function BusinessesPage() {
     const [loadingBusinesses, setLoadingBusinesses] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
     const [formData, setFormData] = useState<BusinessFormData>({ name: '', description: '' });
     const [submitting, setSubmitting] = useState(false);
 
@@ -100,42 +98,6 @@ export default function BusinessesPage() {
         }
     };
 
-    const handleEditBusiness = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!formData.name.trim() || !editingBusiness) return;
-
-        try {
-            setSubmitting(true);
-            const token = localStorage.getItem('access_token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/businesses/${editingBusiness.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: formData.name.trim(),
-                    description: formData.description.trim() || null,
-                }),
-            });
-
-            if (response.ok) {
-                setShowEditModal(false);
-                setEditingBusiness(null);
-                setFormData({ name: '', description: '' });
-                fetchBusinesses(); // Refresh the list
-            } else {
-                const errorData = await response.json();
-                setError(errorData.error || 'Failed to update business');
-            }
-        } catch (error) {
-            console.error('Error updating business:', error);
-            setError('Network error while updating business');
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
     const handleDeleteBusiness = async (businessId: string) => {
         if (!confirm('Are you sure you want to delete this business? This action cannot be undone.')) {
             return;
@@ -162,16 +124,8 @@ export default function BusinessesPage() {
         }
     };
 
-    const openEditModal = (business: Business) => {
-        setEditingBusiness(business);
-        setFormData({ name: business.name, description: business.description || '' });
-        setShowEditModal(true);
-    };
-
     const closeModals = () => {
         setShowCreateModal(false);
-        setShowEditModal(false);
-        setEditingBusiness(null);
         setFormData({ name: '', description: '' });
         setError(null);
     };
@@ -282,18 +236,18 @@ export default function BusinessesPage() {
                                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Updated
                                             </th>
-                                            <th scope="col" className="relative px-6 py-3">
-                                                <span className="sr-only">Actions</span>
-                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {businesses.map((business) => (
                                             <tr key={business.id} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-medium text-gray-900">
+                                                    <button
+                                                        onClick={() => router.push(`/businesses/${business.id}`)}
+                                                        className="text-sm font-medium text-indigo-600 hover:text-indigo-900 hover:underline"
+                                                    >
                                                         {business.name}
-                                                    </div>
+                                                    </button>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="text-sm text-gray-900 max-w-xs truncate">
@@ -305,20 +259,6 @@ export default function BusinessesPage() {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {formatDate(business.updated_at)}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <button
-                                                        onClick={() => openEditModal(business)}
-                                                        className="text-indigo-600 hover:text-indigo-900 mr-4"
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteBusiness(business.id)}
-                                                        className="text-red-600 hover:text-red-900"
-                                                    >
-                                                        Delete
-                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -378,62 +318,6 @@ export default function BusinessesPage() {
                                         className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {submitting ? 'Creating...' : 'Create Business'}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Edit Business Modal */}
-            {showEditModal && editingBusiness && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                        <div className="mt-3">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">Edit Business</h3>
-                            <form onSubmit={handleEditBusiness}>
-                                <div className="mb-4">
-                                    <label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 mb-1">
-                                        Business Name *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="edit-name"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        required
-                                        maxLength={100}
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label htmlFor="edit-description" className="block text-sm font-medium text-gray-700 mb-1">
-                                        Description
-                                    </label>
-                                    <textarea
-                                        id="edit-description"
-                                        value={formData.description}
-                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        rows={3}
-                                        maxLength={500}
-                                    />
-                                </div>
-                                <div className="flex justify-end space-x-3">
-                                    <button
-                                        type="button"
-                                        onClick={closeModals}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={submitting || !formData.name.trim()}
-                                        className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {submitting ? 'Updating...' : 'Update Business'}
                                     </button>
                                 </div>
                             </form>

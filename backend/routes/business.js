@@ -44,6 +44,7 @@ router.get('/', authenticateToken, async (req, res) => {
                 id: business.id,
                 name: business.name,
                 description: business.description,
+                mongodb_link: business.mongodb_link,
                 created_at: business.created_at,
                 updated_at: business.updated_at
             }))
@@ -73,6 +74,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
                 id: business.id,
                 name: business.name,
                 description: business.description,
+                mongodb_link: business.mongodb_link,
                 created_at: business.created_at,
                 updated_at: business.updated_at
             }
@@ -93,7 +95,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 // Create a new business
 router.post('/', authenticateToken, async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, description, mongodb_link } = req.body;
 
         // Validate input
         if (!name || name.trim().length === 0) {
@@ -114,9 +116,16 @@ router.post('/', authenticateToken, async (req, res) => {
             });
         }
 
+        if (mongodb_link && mongodb_link.length > 500) {
+            return res.status(400).json({
+                error: 'MongoDB link must be less than 500 characters'
+            });
+        }
+
         const business = await Business.create({
             name: name.trim(),
             description: description ? description.trim() : null,
+            mongodb_link: mongodb_link ? mongodb_link.trim() : null,
             user_id: req.user.id
         });
 
@@ -126,6 +135,7 @@ router.post('/', authenticateToken, async (req, res) => {
                 id: business.id,
                 name: business.name,
                 description: business.description,
+                mongodb_link: business.mongodb_link,
                 created_at: business.created_at,
                 updated_at: business.updated_at
             }
@@ -141,7 +151,7 @@ router.post('/', authenticateToken, async (req, res) => {
 // Update a business
 router.put('/:id', authenticateToken, async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, description, mongodb_link } = req.body;
 
         // Check if business exists and belongs to user
         const ownershipVerified = await Business.verifyOwnership(req.params.id, req.user.id);
@@ -170,9 +180,16 @@ router.put('/:id', authenticateToken, async (req, res) => {
             });
         }
 
+        if (mongodb_link && mongodb_link.length > 500) {
+            return res.status(400).json({
+                error: 'MongoDB link must be less than 500 characters'
+            });
+        }
+
         const business = await Business.update(req.params.id, {
             name: name.trim(),
-            description: description ? description.trim() : null
+            description: description ? description.trim() : null,
+            mongodb_link: mongodb_link ? mongodb_link.trim() : null
         });
 
         res.json({
@@ -181,6 +198,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
                 id: business.id,
                 name: business.name,
                 description: business.description,
+                mongodb_link: business.mongodb_link,
                 created_at: business.created_at,
                 updated_at: business.updated_at
             }

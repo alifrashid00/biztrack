@@ -6,6 +6,7 @@ class Business {
         this.name = data.name;
         this.description = data.description;
         this.user_id = data.user_id;
+        this.mongodb_link = data.mongodb_link;
         this.created_at = data.created_at;
         this.updated_at = data.updated_at;
     }
@@ -18,6 +19,7 @@ class Business {
                 .insert([{
                     name: businessData.name,
                     description: businessData.description,
+                    mongodb_link: businessData.mongodb_link,
                     user_id: businessData.user_id
                 }])
                 .select()
@@ -82,6 +84,7 @@ class Business {
                 .update({
                     name: updateData.name,
                     description: updateData.description,
+                    mongodb_link: updateData.mongodb_link,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
