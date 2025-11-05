@@ -44,9 +44,40 @@
   border-left: 4px solid hsl(var(--success));
 }
 
+/* Business selector styles */
+select.business-selector {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+select.business-selector:hover {
+  border-color: hsl(var(--primary));
+}
+
+select.business-selector:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .inventory-stats-grid {
     grid-template-columns: 1fr;
+  }
+  
+  select.business-selector {
+    width: 100%;
+    min-width: unset;
   }
 }

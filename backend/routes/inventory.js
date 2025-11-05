@@ -19,15 +19,20 @@ const groq = axios.create({
     }
 });
 
+console.log('[INVENTORY ROUTES] Inventory routes module loaded');
+
 /**
  * GET /api/inventory/optimize/:businessId
  * Run AI-powered inventory optimization for a specific business
  */
 router.get('/optimize/:businessId', authenticateUser, async (req, res) => {
+    console.log(`[INVENTORY OPTIMIZE] Starting optimization for businessId: ${req.params.businessId}, userId: ${req.user.id}`);
+    
     try {
         const { businessId } = req.params;
         const userId = req.user.id;
 
+        console.log(`[INVENTORY OPTIMIZE] Verifying business ownership...`);
         // Verify business belongs to user
         const { data: business, error: businessError } = await supabase
             .from('businesses')
@@ -37,9 +42,12 @@ router.get('/optimize/:businessId', authenticateUser, async (req, res) => {
             .single();
 
         if (businessError || !business) {
+            console.log(`[INVENTORY OPTIMIZE] Business verification failed:`, businessError);
             return res.status(404).json({ error: 'Business not found or access denied' });
         }
+        console.log(`[INVENTORY OPTIMIZE] Business verified: ${business.name}`);
 
+        console.log(`[INVENTORY OPTIMIZE] Fetching sales summary data...`);
         // Fetch sales summary data
         const { data: salesData, error: salesError } = await supabase
             .from('vw_product_sales_summary')
@@ -47,9 +55,12 @@ router.get('/optimize/:businessId', authenticateUser, async (req, res) => {
             .eq('business_id', businessId);
 
         if (salesError) {
-            console.error('Sales data error:', salesError);
+            console.error('[INVENTORY OPTIMIZE] Sales data error:', salesError);
+        } else {
+            console.log(`[INVENTORY OPTIMIZE] Fetched ${salesData?.length || 0} sales records`);
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Fetching product data...`);
         // Fetch all products
         const { data: productData, error: productError } = await supabase
             .from('product')
@@ -57,9 +68,12 @@ router.get('/optimize/:businessId', authenticateUser, async (req, res) => {
             .eq('business_id', businessId);
 
         if (productError) {
-            console.error('Product data error:', productError);
+            console.error('[INVENTORY OPTIMIZE] Product data error:', productError);
+        } else {
+            console.log(`[INVENTORY OPTIMIZE] Fetched ${productData?.length || 0} products`);
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Fetching capital data...`);
         // Fetch available capital
         const { data: capitalData, error: capitalError } = await supabase
             .from('vw_business_capital')
@@ -68,9 +82,12 @@ router.get('/optimize/:businessId', authenticateUser, async (req, res) => {
             .single();
 
         if (capitalError) {
-            console.error('Capital data error:', capitalError);
+            console.error('[INVENTORY OPTIMIZE] Capital data error:', capitalError);
+        } else {
+            console.log(`[INVENTORY OPTIMIZE] Available capital: $${capitalData?.total_net_capital || 0}`);
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Fetching supplier lead times...`);
         // Fetch supplier lead times
         const { data: leadTimeData, error: leadTimeError } = await supabase
             .from('vw_supplier_lead_times')
@@ -78,9 +95,12 @@ router.get('/optimize/:businessId', authenticateUser, async (req, res) => {
             .eq('business_id', businessId);
 
         if (leadTimeError) {
-            console.error('Lead time data error:', leadTimeError);
+            console.error('[INVENTORY OPTIMIZE] Lead time data error:', leadTimeError);
+        } else {
+            console.log(`[INVENTORY OPTIMIZE] Fetched ${leadTimeData?.length || 0} lead time records`);
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Fetching co-purchase data...`);
         // Fetch co-purchase data for bundles
         const { data: coPurchaseData, error: coPurchaseError } = await supabase
             .from('vw_product_copurchases')
@@ -90,9 +110,12 @@ router.get('/optimize/:businessId', authenticateUser, async (req, res) => {
             .limit(20);
 
         if (coPurchaseError) {
-            console.error('Co-purchase data error:', coPurchaseError);
+            console.error('[INVENTORY OPTIMIZE] Co-purchase data error:', coPurchaseError);
+        } else {
+            console.log(`[INVENTORY OPTIMIZE] Fetched ${coPurchaseData?.length || 0} co-purchase records`);
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Building AI prompt...`);
         // Build prompt for Groq
         const prompt = `You are an advanced AI inventory optimization expert. Analyze the following merchandising business data and provide actionable recommendations.
 
@@ -193,9 +216,10 @@ ${JSON.stringify(coPurchaseData?.slice(0, 10) || [], null, 2)}
 
 Return ONLY valid JSON, no markdown or explanations.`;
 
+        console.log(`[INVENTORY OPTIMIZE] Calling Groq API...`);
         // Call Groq API
         const groqResponse = await groq.post('/chat/completions', {
-            model: 'mixtral-8x7b-32768',
+            model: 'llama-3.1-8b-instant',
             messages: [
                 {
                     role: 'system',
@@ -210,8 +234,10 @@ Return ONLY valid JSON, no markdown or explanations.`;
             max_tokens: 8000
         });
 
+        console.log(`[INVENTORY OPTIMIZE] Groq API response received`);
         const aiResponse = groqResponse.data.choices[0].message.content;
         
+        console.log(`[INVENTORY OPTIMIZE] Parsing AI response...`);
         // Parse AI response
         let optimizationResults;
         try {
@@ -220,18 +246,21 @@ Return ONLY valid JSON, no markdown or explanations.`;
                              aiResponse.match(/```\n?([\s\S]*?)\n?```/);
             const jsonString = jsonMatch ? jsonMatch[1] : aiResponse;
             optimizationResults = JSON.parse(jsonString);
+            console.log(`[INVENTORY OPTIMIZE] Successfully parsed AI response`);
         } catch (parseError) {
-            console.error('JSON Parse Error:', parseError);
-            console.error('AI Response:', aiResponse);
+            console.error('[INVENTORY OPTIMIZE] JSON Parse Error:', parseError);
+            console.error('[INVENTORY OPTIMIZE] AI Response:', aiResponse);
             return res.status(500).json({ 
                 error: 'Failed to parse AI response',
                 raw_response: aiResponse 
             });
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Processing optimization results for storage...`);
         // Store results in database
         const optimizationRecords = [];
         
+        console.log(`[INVENTORY OPTIMIZE] Storing forecast data...`);
         // Store forecast data
         if (optimizationResults.forecast) {
             for (const item of optimizationResults.forecast) {
@@ -243,8 +272,10 @@ Return ONLY valid JSON, no markdown or explanations.`;
                     confidence_score: item.confidence_score * 100
                 });
             }
+            console.log(`[INVENTORY OPTIMIZE] Stored ${optimizationResults.forecast.length} forecast records`);
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Storing reorder plan...`);
         // Store reorder plan
         if (optimizationResults.reorder_plan) {
             for (const item of optimizationResults.reorder_plan) {
@@ -263,8 +294,10 @@ Return ONLY valid JSON, no markdown or explanations.`;
                     });
                 }
             }
+            console.log(`[INVENTORY OPTIMIZE] Stored ${optimizationResults.reorder_plan.length} reorder plan records`);
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Storing dead stock recommendations...`);
         // Store dead stock recommendations
         if (optimizationResults.dead_stock) {
             for (const item of optimizationResults.dead_stock) {
@@ -279,8 +312,10 @@ Return ONLY valid JSON, no markdown or explanations.`;
                     });
                 }
             }
+            console.log(`[INVENTORY OPTIMIZE] Stored ${optimizationResults.dead_stock.length} dead stock records`);
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Saving ${optimizationRecords.length} records to database...`);
         // Save to database
         if (optimizationRecords.length > 0) {
             const { error: insertError } = await supabase
@@ -290,10 +325,13 @@ Return ONLY valid JSON, no markdown or explanations.`;
                 });
 
             if (insertError) {
-                console.error('Error saving optimization results:', insertError);
+                console.error('[INVENTORY OPTIMIZE] Error saving optimization results:', insertError);
+            } else {
+                console.log(`[INVENTORY OPTIMIZE] Successfully saved ${optimizationRecords.length} records to database`);
             }
         }
 
+        console.log(`[INVENTORY OPTIMIZE] Returning results to client...`);
         // Return results
         res.json({
             success: true,
@@ -309,9 +347,10 @@ Return ONLY valid JSON, no markdown or explanations.`;
                 timestamp: new Date().toISOString()
             }
         });
+        console.log(`[INVENTORY OPTIMIZE] Optimization completed successfully for business: ${business.name}`);
 
     } catch (error) {
-        console.error('Inventory optimization error:', error);
+        console.error('[INVENTORY OPTIMIZE] Inventory optimization error:', error);
         res.status(500).json({ 
             error: 'Failed to optimize inventory',
             message: error.message 
@@ -324,10 +363,13 @@ Return ONLY valid JSON, no markdown or explanations.`;
  * Get stored optimization results for a business
  */
 router.get('/results/:businessId', authenticateUser, async (req, res) => {
+    console.log(`[INVENTORY RESULTS] Fetching results for businessId: ${req.params.businessId}, userId: ${req.user.id}`);
+    
     try {
         const { businessId } = req.params;
         const userId = req.user.id;
 
+        console.log(`[INVENTORY RESULTS] Verifying business ownership...`);
         // Verify business belongs to user
         const { data: business, error: businessError } = await supabase
             .from('businesses')
@@ -337,9 +379,12 @@ router.get('/results/:businessId', authenticateUser, async (req, res) => {
             .single();
 
         if (businessError || !business) {
+            console.log(`[INVENTORY RESULTS] Business verification failed:`, businessError);
             return res.status(404).json({ error: 'Business not found or access denied' });
         }
+        console.log(`[INVENTORY RESULTS] Business verified: ${business.name}`);
 
+        console.log(`[INVENTORY RESULTS] Fetching optimization results from database...`);
         // Fetch latest optimization results
         const { data: results, error } = await supabase
             .from('inventory_optimization')
@@ -360,18 +405,21 @@ router.get('/results/:businessId', authenticateUser, async (req, res) => {
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('Error fetching results:', error);
+            console.error('[INVENTORY RESULTS] Error fetching results:', error);
             return res.status(500).json({ error: 'Failed to fetch results' });
         }
 
+        console.log(`[INVENTORY RESULTS] Found ${results?.length || 0} optimization records`);
+        console.log(`[INVENTORY RESULTS] Returning results to client...`);
         res.json({
             success: true,
             results: results || [],
             count: results?.length || 0
         });
+        console.log(`[INVENTORY RESULTS] Results fetch completed for business: ${business.name}`);
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[INVENTORY RESULTS] Error:', error);
         res.status(500).json({ error: 'Failed to fetch optimization results' });
     }
 });
@@ -381,10 +429,13 @@ router.get('/results/:businessId', authenticateUser, async (req, res) => {
  * Get inventory statistics for a business
  */
 router.get('/stats/:businessId', authenticateUser, async (req, res) => {
+    console.log(`[INVENTORY STATS] Fetching stats for businessId: ${req.params.businessId}, userId: ${req.user.id}`);
+    
     try {
         const { businessId } = req.params;
         const userId = req.user.id;
 
+        console.log(`[INVENTORY STATS] Verifying business ownership...`);
         // Verify business belongs to user
         const { data: business, error: businessError } = await supabase
             .from('businesses')
@@ -394,15 +445,21 @@ router.get('/stats/:businessId', authenticateUser, async (req, res) => {
             .single();
 
         if (businessError || !business) {
+            console.log(`[INVENTORY STATS] Business verification failed:`, businessError);
             return res.status(404).json({ error: 'Business not found or access denied' });
         }
+        console.log(`[INVENTORY STATS] Business verified: ${business.name}`);
 
+        console.log(`[INVENTORY STATS] Getting product count...`);
         // Get product count
         const { count: totalProducts } = await supabase
             .from('product')
             .select('*', { count: 'exact', head: true })
             .eq('business_id', businessId);
 
+        console.log(`[INVENTORY STATS] Total products: ${totalProducts || 0}`);
+
+        console.log(`[INVENTORY STATS] Getting dead stock count...`);
         // Get dead stock count
         const { data: salesSummary } = await supabase
             .from('vw_product_sales_summary')
@@ -410,6 +467,9 @@ router.get('/stats/:businessId', authenticateUser, async (req, res) => {
             .eq('business_id', businessId)
             .eq('is_dead_stock', true);
 
+        console.log(`[INVENTORY STATS] Dead stock items: ${salesSummary?.length || 0}`);
+
+        console.log(`[INVENTORY STATS] Getting reorder recommendations...`);
         // Get reorder recommendations
         const { data: reorderItems } = await supabase
             .from('inventory_optimization')
@@ -418,18 +478,25 @@ router.get('/stats/:businessId', authenticateUser, async (req, res) => {
             .not('reorder_point', 'is', null)
             .gt('expires_at', new Date().toISOString());
 
+        console.log(`[INVENTORY STATS] Items needing reorder: ${reorderItems?.length || 0}`);
+
+        const optimalStock = (totalProducts || 0) - (salesSummary?.length || 0) - (reorderItems?.length || 0);
+        console.log(`[INVENTORY STATS] Optimal stock items: ${optimalStock}`);
+
+        console.log(`[INVENTORY STATS] Returning stats to client...`);
         res.json({
             success: true,
             stats: {
                 total_items: totalProducts || 0,
                 need_reorder: reorderItems?.length || 0,
                 dead_stock: salesSummary?.length || 0,
-                optimal_stock: (totalProducts || 0) - (salesSummary?.length || 0) - (reorderItems?.length || 0)
+                optimal_stock: optimalStock
             }
         });
+        console.log(`[INVENTORY STATS] Stats fetch completed for business: ${business.name}`);
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('[INVENTORY STATS] Error:', error);
         res.status(500).json({ error: 'Failed to fetch inventory stats' });
     }
 });
