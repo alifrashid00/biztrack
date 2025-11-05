@@ -13,6 +13,7 @@ const langchainRoutes = langchainModule.router;
 const ragRoutes = ragModule.router;
 const businessRoutes = require('./routes/business');
 const dataRoutes = require('./routes/data');
+const inventoryRoutes = require('./routes/inventory');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -44,6 +45,7 @@ app.use('/api/langchain', langchainRoutes);
 // app.use('/api/rag', ragRoutes);
 app.use('/api/businesses', businessRoutes);
 app.use('/api/data', dataRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
