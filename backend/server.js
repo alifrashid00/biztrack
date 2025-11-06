@@ -16,6 +16,7 @@ const dataRoutes = require('./routes/data');
 const inventoryRoutes = require('./routes/inventory');
 const mappingRoutes = require('./routes/mapping');
 const testRoutes = require('./routes/test');
+const customerInsightsRoutes = require('./routes/customer_insights');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -50,6 +51,7 @@ app.use('/api/data', dataRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/mapping', mappingRoutes);
 app.use('/api/test', testRoutes);
+app.use('/api/customer-insights', customerInsightsRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
