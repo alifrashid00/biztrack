@@ -13,6 +13,7 @@ const langchainRoutes = langchainModule.router;
 const ragRoutes = ragModule.router;
 const businessRoutes = require('./routes/business');
 const dataRoutes = require('./routes/data');
+const inventoryRoutes = require('./routes/inventory');
 const mappingRoutes = require('./routes/mapping');
 const testRoutes = require('./routes/test');
 
@@ -46,6 +47,7 @@ app.use('/api/langchain', langchainRoutes);
 // app.use('/api/rag', ragRoutes);
 app.use('/api/businesses', businessRoutes);
 app.use('/api/data', dataRoutes);
+app.use('/api/inventory', inventoryRoutes);
 app.use('/api/mapping', mappingRoutes);
 app.use('/api/test', testRoutes);
 
