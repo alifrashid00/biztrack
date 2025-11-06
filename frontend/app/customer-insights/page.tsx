@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CustomerInsights } from "@/components/CustomerInsights";
+import { CustomerDetailModal } from "@/components/CustomerDetailModal";
+import { SegmentCustomersModal } from "@/components/SegmentCustomersModal";
+import { AtRiskCustomersModal } from "@/components/AtRiskCustomersModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Users, Star, TrendingDown, Heart, Loader2, Store, RefreshCw, Mail, Eye, Edit } from "lucide-react";
@@ -73,6 +76,13 @@ const CustomerInsightsPage = () => {
   const [loadingStats, setLoadingStats] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Modal states
+  const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
+  const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isSegmentModalOpen, setIsSegmentModalOpen] = useState(false);
+  const [isAtRiskModalOpen, setIsAtRiskModalOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -226,6 +236,16 @@ const CustomerInsightsPage = () => {
     }
   };
 
+  const handleViewSegment = (segment: string) => {
+    setSelectedSegment(segment);
+    setIsSegmentModalOpen(true);
+  };
+
+  const handleViewCustomer = (customerId: number) => {
+    setSelectedCustomerId(customerId);
+    setIsCustomerModalOpen(true);
+  };
+
   if (authLoading || loadingBusinesses) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -296,54 +316,66 @@ const CustomerInsightsPage = () => {
         {selectedBusiness && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="border-success/20 bg-success/5">
+              <Card className="border-success/20 bg-success/5 cursor-pointer hover:shadow-md transition-shadow" 
+                    onClick={() => handleViewSegment("Champions")}>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">Champions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-success" />
-                    {loadingStats ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <div className="text-2xl font-bold text-foreground">{championsCount}</div>
-                    )}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Star className="h-5 w-5 text-success" />
+                      {loadingStats ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <div className="text-2xl font-bold text-foreground">{championsCount}</div>
+                      )}
+                    </div>
+                    <Eye className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <p className="text-xs text-success mt-1">Top customers</p>
                 </CardContent>
               </Card>
               
-              <Card className="border-primary/20 bg-primary/5">
+              <Card className="border-primary/20 bg-primary/5 cursor-pointer hover:shadow-md transition-shadow" 
+                    onClick={() => handleViewSegment("Loyal Customers")}>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">Loyal</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-2">
-                    <Heart className="h-5 w-5 text-primary" />
-                    {loadingStats ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <div className="text-2xl font-bold text-foreground">{loyalCount}</div>
-                    )}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Heart className="h-5 w-5 text-primary" />
+                      {loadingStats ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <div className="text-2xl font-bold text-foreground">{loyalCount}</div>
+                      )}
+                    </div>
+                    <Eye className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <p className="text-xs text-primary mt-1">Regular buyers</p>
                 </CardContent>
               </Card>
 
-              <Card className="border-warning/20 bg-warning/5">
+              <Card className="border-warning/20 bg-warning/5 cursor-pointer hover:shadow-md transition-shadow" 
+                    onClick={() => setIsAtRiskModalOpen(true)}>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">At Risk</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-2">
-                    <TrendingDown className="h-5 w-5 text-warning" />
-                    {loadingStats ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <div className="text-2xl font-bold text-foreground">
-                        {atRiskStats?.total_at_risk || 0}
-                      </div>
-                    )}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TrendingDown className="h-5 w-5 text-warning" />
+                      {loadingStats ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <div className="text-2xl font-bold text-foreground">
+                          {atRiskStats?.total_at_risk || 0}
+                        </div>
+                      )}
+                    </div>
+                    <Eye className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <p className="text-xs text-warning mt-1">Need attention</p>
                 </CardContent>
@@ -430,7 +462,7 @@ const CustomerInsightsPage = () => {
               )}
             </Card>
 
-            <CustomerInsights businessId={selectedBusiness} />
+            <CustomerInsights businessId={selectedBusiness} onViewSegment={handleViewSegment} />
             
             <Card>
               <CardHeader>
@@ -527,6 +559,39 @@ const CustomerInsightsPage = () => {
           </>
         )}
       </main>
+
+      {/* Modals */}
+      {selectedCustomerId && (
+        <CustomerDetailModal
+          businessId={selectedBusiness}
+          customerId={selectedCustomerId}
+          isOpen={isCustomerModalOpen}
+          onClose={() => {
+            setIsCustomerModalOpen(false);
+            setSelectedCustomerId(null);
+          }}
+        />
+      )}
+
+      {selectedSegment && (
+        <SegmentCustomersModal
+          businessId={selectedBusiness}
+          segment={selectedSegment}
+          isOpen={isSegmentModalOpen}
+          onClose={() => {
+            setIsSegmentModalOpen(false);
+            setSelectedSegment(null);
+          }}
+          onViewCustomer={handleViewCustomer}
+        />
+      )}
+
+      <AtRiskCustomersModal
+        businessId={selectedBusiness}
+        isOpen={isAtRiskModalOpen}
+        onClose={() => setIsAtRiskModalOpen(false)}
+        onViewCustomer={handleViewCustomer}
+      />
     </div>
   );
 };

@@ -647,6 +647,180 @@ router.get('/at-risk/:businessId', authenticateUser, async (req, res) => {
 });
 
 /**
+ * GET /api/customer-insights/customer/:businessId/:customerId
+ * Get detailed information about a specific customer
+ */
+router.get('/customer/:businessId/:customerId', authenticateUser, async (req, res) => {
+    console.log(`[CUSTOMER INSIGHTS DETAIL] Fetching customer ${req.params.customerId} for businessId: ${req.params.businessId}`);
+    
+    try {
+        const { businessId, customerId } = req.params;
+        const userId = req.user.id;
+
+        // Verify business ownership
+        const { data: business, error: businessError } = await supabase
+            .from('businesses')
+            .select('*')
+            .eq('id', businessId)
+            .eq('user_id', userId)
+            .single();
+
+        if (businessError || !business) {
+            return res.status(404).json({ error: 'Business not found' });
+        }
+
+        // Fetch customer RFM data
+        const { data: rfmData, error: rfmError } = await supabase
+            .from('vw_customer_rfm')
+            .select('*')
+            .eq('business_id', businessId)
+            .eq('customer_id', customerId)
+            .single();
+
+        if (rfmError) {
+            console.error(`[CUSTOMER INSIGHTS DETAIL] RFM error:`, rfmError);
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+
+        // Fetch customer purchase behavior
+        const { data: behaviorData, error: behaviorError } = await supabase
+            .from('vw_customer_purchase_behavior')
+            .select('*')
+            .eq('business_id', businessId)
+            .eq('customer_id', customerId)
+            .single();
+
+        // Fetch customer CLV
+        const { data: clvData, error: clvError } = await supabase
+            .from('vw_customer_lifetime_value')
+            .select('*')
+            .eq('business_id', businessId)
+            .eq('customer_id', customerId)
+            .single();
+
+        // Fetch recent orders
+        const { data: recentOrders, error: ordersError } = await supabase
+            .from('sales_order')
+            .select('*')
+            .eq('business_id', businessId)
+            .eq('customer_id', customerId)
+            .order('order_date', { ascending: false })
+            .limit(10);
+
+        // Fetch product recommendations
+        const { data: recommendations, error: recError } = await supabase
+            .from('vw_customer_product_recommendations')
+            .select('*')
+            .eq('business_id', businessId)
+            .eq('customer_id', customerId)
+            .limit(5);
+
+        // Fetch stored insights for this customer
+        const { data: insights, error: insightsError } = await supabase
+            .from('customer_insights')
+            .select('*')
+            .eq('business_id', businessId)
+            .eq('customer_id', customerId)
+            .gte('expires_at', new Date().toISOString())
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+        // Fetch engagement trends
+        const { data: trends, error: trendsError } = await supabase
+            .from('vw_customer_engagement_trends')
+            .select('*')
+            .eq('business_id', businessId)
+            .eq('customer_id', customerId)
+            .order('purchase_month', { ascending: false })
+            .limit(6);
+
+        res.json({
+            success: true,
+            business_name: business.name,
+            customer: {
+                ...rfmData,
+                behavior: behaviorData,
+                clv: clvData,
+                recent_orders: recentOrders || [],
+                recommendations: recommendations || [],
+                insights: insights || [],
+                trends: trends || []
+            }
+        });
+
+    } catch (error) {
+        console.error('[CUSTOMER INSIGHTS DETAIL] Error:', error);
+        res.status(500).json({ error: 'Failed to fetch customer details' });
+    }
+});
+
+/**
+ * GET /api/customer-insights/segment-customers/:businessId/:segment
+ * Get list of customers in a specific RFM segment
+ */
+router.get('/segment-customers/:businessId/:segment', authenticateUser, async (req, res) => {
+    console.log(`[CUSTOMER INSIGHTS SEGMENT CUSTOMERS] Fetching ${req.params.segment} customers for businessId: ${req.params.businessId}`);
+    
+    try {
+        const { businessId, segment } = req.params;
+        const userId = req.user.id;
+
+        // Verify business ownership
+        const { data: business, error: businessError } = await supabase
+            .from('businesses')
+            .select('*')
+            .eq('id', businessId)
+            .eq('user_id', userId)
+            .single();
+
+        if (businessError || !business) {
+            return res.status(404).json({ error: 'Business not found' });
+        }
+
+        // Fetch customers in segment
+        const { data: customers, error: customersError } = await supabase
+            .from('vw_customer_rfm')
+            .select('*')
+            .eq('business_id', businessId)
+            .eq('rfm_segment', segment)
+            .order('monetary_value', { ascending: false });
+
+        if (customersError) {
+            console.error(`[CUSTOMER INSIGHTS SEGMENT CUSTOMERS] Error:`, customersError);
+            return res.status(500).json({ error: 'Failed to fetch segment customers' });
+        }
+
+        // Calculate segment statistics
+        const totalRevenue = customers?.reduce((sum, c) => sum + (c.monetary_value || 0), 0) || 0;
+        const avgRevenue = customers?.length > 0 ? totalRevenue / customers.length : 0;
+        const avgFrequency = customers?.length > 0 
+            ? customers.reduce((sum, c) => sum + c.frequency_count, 0) / customers.length 
+            : 0;
+        const avgRecency = customers?.length > 0 
+            ? customers.reduce((sum, c) => sum + c.recency_days, 0) / customers.length 
+            : 0;
+
+        res.json({
+            success: true,
+            business_name: business.name,
+            segment: segment,
+            customers: customers,
+            statistics: {
+                total_customers: customers?.length || 0,
+                total_revenue: totalRevenue,
+                avg_revenue: avgRevenue,
+                avg_frequency: avgFrequency,
+                avg_recency: avgRecency
+            }
+        });
+
+    } catch (error) {
+        console.error('[CUSTOMER INSIGHTS SEGMENT CUSTOMERS] Error:', error);
+        res.status(500).json({ error: 'Failed to fetch segment customers' });
+    }
+});
+
+/**
  * POST /api/customer-insights/campaigns
  * Create a new customer engagement campaign
  */

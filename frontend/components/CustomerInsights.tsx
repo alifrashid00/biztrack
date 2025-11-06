@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, TrendingUp, AlertCircle, Star, Loader2, Mail } from "lucide-react";
+import { Users, TrendingUp, AlertCircle, Star, Loader2, Mail, Eye } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface Segment {
@@ -19,6 +19,7 @@ interface Segment {
 
 interface CustomerInsightsProps {
   businessId: string;
+  onViewSegment: (segment: string) => void;
 }
 
 const getSegmentColor = (segment: string): string => {
@@ -44,7 +45,7 @@ const getSegmentIcon = (segment: string) => {
   return TrendingUp;
 };
 
-export const CustomerInsights = ({ businessId }: CustomerInsightsProps) => {
+export const CustomerInsights = ({ businessId, onViewSegment }: CustomerInsightsProps) => {
   const [segments, setSegments] = useState<Segment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -153,9 +154,19 @@ export const CustomerInsights = ({ businessId }: CustomerInsightsProps) => {
                       {segment.customer_count} customers
                     </span>
                   </div>
-                  <span className="font-semibold">
-                    ${segment.total_segment_revenue.toFixed(2)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">
+                      ${segment.total_segment_revenue.toFixed(2)}
+                    </span>
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={() => onViewSegment(segment.rfm_segment)}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                  </div>
                 </div>
                 <Progress value={percentage} className="h-2" />
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
