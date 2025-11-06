@@ -18,7 +18,6 @@ import {
   Package,
   Star
 } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CustomerDetailModalProps {
   businessId: string;
@@ -160,7 +159,7 @@ export const CustomerDetailModal = ({
         </div>
 
         {/* Content */}
-        <ScrollArea className="flex-1 p-6">
+        <div className="flex-1 overflow-y-auto p-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -481,7 +480,7 @@ export const CustomerDetailModal = ({
               )}
             </div>
           ) : null}
-        </ScrollArea>
+        </div>
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 p-6 border-t border-gray-200 bg-white">

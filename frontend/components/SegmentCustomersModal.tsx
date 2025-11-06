@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X, Loader2, User, Eye, Mail, DollarSign } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface SegmentCustomersModalProps {
   businessId: string;
@@ -114,7 +113,7 @@ export const SegmentCustomersModal = ({
         </div>
 
         {/* Content */}
-        <ScrollArea className="flex-1 p-6">
+        <div className="flex-1 overflow-y-auto p-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -193,7 +192,7 @@ export const SegmentCustomersModal = ({
               ))}
             </div>
           )}
-        </ScrollArea>
+        </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-white">
