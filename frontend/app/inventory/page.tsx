@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { InventoryAlerts } from "@/components/InventoryAlerts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Package, AlertTriangle, TrendingDown, PackageCheck, RefreshCw, Loader2, Store, Search, Filter } from "lucide-react";
+import { ArrowLeft, Package, AlertTriangle, TrendingDown, PackageCheck, Loader2, Store, Search, Filter, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import "./inventory.css";
@@ -67,64 +66,14 @@ interface Pagination {
   totalPages: number;
 }
 
-interface OptimizationResult {
-  forecast?: Array<{
-    product_id: string;
-    product_name: string;
-    demand_forecast_units: number;
-    confidence_score: number;
-  }>;
-  reorder_plan?: Array<{
-    product_id: string;
-    product_name: string;
-    current_status: string;
-    reorder_point: number;
-    reorder_quantity: number;
-    estimated_cost: number;
-    priority: string;
-    rationale: string;
-  }>;
-  dead_stock?: Array<{
-    product_id: string;
-    product_name: string;
-    last_sale_date: string;
-    clearance_discount: number;
-    estimated_loss: number;
-    action: string;
-  }>;
-  bundles?: Array<{
-    bundle_name: string;
-    product_ids: string[];
-    product_names: string[];
-    bundle_price: number;
-    estimated_margin: number;
-    rationale: string;
-    copurchase_frequency: number;
-  }>;
-  seasonal_recommendations?: Array<{
-    action: string;
-    category: string;
-    percentage_change: number;
-    rationale: string;
-  }>;
-  summary?: {
-    total_capital_required: number;
-    expected_roi: number;
-    risk_level: string;
-    key_insights: string[];
-  };
-}
-
 const InventoryPage = () => {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [selectedBusiness, setSelectedBusiness] = useState<string>("");
   const [stats, setStats] = useState<InventoryStats | null>(null);
-  const [optimization, setOptimization] = useState<OptimizationResult | null>(null);
   const [loadingBusinesses, setLoadingBusinesses] = useState(true);
   const [loadingStats, setLoadingStats] = useState(false);
-  const [optimizing, setOptimizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Products state
@@ -219,40 +168,6 @@ const InventoryPage = () => {
     }
   };
 
-  const runOptimization = async () => {
-    if (!selectedBusiness) return;
-
-    try {
-      setOptimizing(true);
-      setError(null);
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/inventory/optimize/${selectedBusiness}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to run optimization");
-      }
-
-      const data = await response.json();
-      setOptimization(data.optimization);
-      
-      // Refresh stats after optimization
-      fetchStats();
-    } catch (err: any) {
-      console.error("Error running optimization:", err);
-      setError(err.message || "Failed to run AI optimization");
-    } finally {
-      setOptimizing(false);
-    }
-  };
-
   const fetchProducts = async (page = 1) => {
     if (!selectedBusiness) return;
 
@@ -328,6 +243,16 @@ const InventoryPage = () => {
                   </option>
                 ))}
               </select>
+              {selectedBusiness && (
+                <Button
+                  onClick={() => router.push(`/inventory/optimize?business=${selectedBusiness}`)}
+                  variant="outline"
+                  className="ml-2"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  AI Optimize
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -561,142 +486,6 @@ const InventoryPage = () => {
                 )}
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>AI Inventory Optimization</CardTitle>
-                    <CardDescription>Run AI-powered analysis to get actionable insights</CardDescription>
-                  </div>
-                  <Button onClick={runOptimization} disabled={optimizing}>
-                    {optimizing ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Analyzing...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        Run Optimization
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </CardHeader>
-              {optimization && (
-                <CardContent>
-                  <div className="space-y-6">
-                    {/* Summary */}
-                    {optimization.summary && (
-                      <div className="p-4 rounded-lg border border-border bg-card/50">
-                        <h3 className="font-semibold mb-2">Summary</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                          <div>
-                            <p className="text-sm text-muted-foreground">Capital Required</p>
-                            <p className="text-lg font-bold">${optimization.summary.total_capital_required?.toFixed(2) || 0}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-muted-foreground">Expected ROI</p>
-                            <p className="text-lg font-bold">{optimization.summary.expected_roi?.toFixed(1) || 0}%</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-muted-foreground">Risk Level</p>
-                            <p className="text-lg font-bold capitalize">{optimization.summary.risk_level || 'N/A'}</p>
-                          </div>
-                        </div>
-                        {optimization.summary.key_insights && optimization.summary.key_insights.length > 0 && (
-                          <div>
-                            <p className="text-sm font-semibold mb-2">Key Insights:</p>
-                            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                              {optimization.summary.key_insights.map((insight, idx) => (
-                                <li key={idx}>{insight}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Bundles */}
-                    {optimization.bundles && optimization.bundles.length > 0 && (
-                      <div>
-                        <h3 className="font-semibold mb-3">Recommended Bundles</h3>
-                        <div className="space-y-3">
-                          {optimization.bundles.slice(0, 3).map((bundle, idx) => (
-                            <div key={idx} className="flex items-start gap-4 p-4 rounded-lg border border-border bg-card">
-                              <div className="p-2 rounded-lg bg-primary/10">
-                                <Package className="h-5 w-5 text-primary" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-semibold text-foreground">{bundle.bundle_name}</p>
-                                <p className="text-sm text-muted-foreground mb-2">{bundle.rationale}</p>
-                                <div className="flex items-center gap-4 text-sm">
-                                  <span>Price: ${bundle.bundle_price?.toFixed(2)}</span>
-                                  <span>Margin: {bundle.estimated_margin?.toFixed(1)}%</span>
-                                  <span>Co-purchase: {bundle.copurchase_frequency?.toFixed(0)}%</span>
-                                </div>
-                                <Button size="sm" className="mt-2">Create Bundle</Button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Dead Stock */}
-                    {optimization.dead_stock && optimization.dead_stock.length > 0 && (
-                      <div>
-                        <h3 className="font-semibold mb-3">Dead Stock Clearance</h3>
-                        <div className="space-y-3">
-                          {optimization.dead_stock.slice(0, 5).map((item, idx) => (
-                            <div key={idx} className="flex items-start gap-4 p-4 rounded-lg border border-destructive/20 bg-destructive/5">
-                              <div className="p-2 rounded-lg bg-destructive/10">
-                                <TrendingDown className="h-5 w-5 text-destructive" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-semibold text-foreground">{item.product_name}</p>
-                                <p className="text-sm text-muted-foreground mb-2">{item.action}</p>
-                                <div className="flex items-center gap-4 text-sm">
-                                  <span>Discount: {item.clearance_discount}%</span>
-                                  <span>Est. Loss: ${item.estimated_loss?.toFixed(2)}</span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Seasonal Recommendations */}
-                    {optimization.seasonal_recommendations && optimization.seasonal_recommendations.length > 0 && (
-                      <div>
-                        <h3 className="font-semibold mb-3">Seasonal Adjustments</h3>
-                        <div className="space-y-3">
-                          {optimization.seasonal_recommendations.map((rec, idx) => (
-                            <div key={idx} className="flex items-start gap-4 p-4 rounded-lg border border-border bg-card">
-                              <div className="p-2 rounded-lg bg-warning/10">
-                                <AlertTriangle className="h-5 w-5 text-warning" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-semibold text-foreground capitalize">{rec.action} {rec.category}</p>
-                                <p className="text-sm text-muted-foreground mb-2">{rec.rationale}</p>
-                                <div className="text-sm">
-                                  <span>Change: {rec.percentage_change > 0 ? '+' : ''}{rec.percentage_change}%</span>
-                                </div>
-                                <Button size="sm" variant="outline" className="mt-2">View Plan</Button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              )}
-            </Card>
-
-            <InventoryAlerts businessId={selectedBusiness} />
           </>
         )}
       </main>
