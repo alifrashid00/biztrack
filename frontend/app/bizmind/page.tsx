@@ -25,6 +25,8 @@ const AIAssistantPage = () => {
         </div>
       </header>
 
+              <AIAssistant />
+
       <main className="container mx-auto px-4 py-8 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
@@ -94,41 +96,8 @@ const AIAssistantPage = () => {
           </Card>
         </div>
 
-        <AIAssistant />
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Conversations</CardTitle>
-            <CardDescription>Your AI assistant interaction history</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="p-4 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="flex items-start justify-between mb-2">
-                  <p className="font-semibold text-foreground">Revenue Analysis Request</p>
-                  <span className="text-xs text-muted-foreground">2 hours ago</span>
-                </div>
-                <p className="text-sm text-muted-foreground">"Compare my revenue this month vs last month by category"</p>
-              </div>
-              
-              <div className="p-4 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="flex items-start justify-between mb-2">
-                  <p className="font-semibold text-foreground">Inventory Optimization</p>
-                  <span className="text-xs text-muted-foreground">Yesterday</span>
-                </div>
-                <p className="text-sm text-muted-foreground">"Which products should I reorder this week?"</p>
-              </div>
 
-              <div className="p-4 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer">
-                <div className="flex items-start justify-between mb-2">
-                  <p className="font-semibold text-foreground">Customer Insights</p>
-                  <span className="text-xs text-muted-foreground">2 days ago</span>
-                </div>
-                <p className="text-sm text-muted-foreground">"Show me customers who haven't purchased in 60 days"</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </main>
     </div>
   );
