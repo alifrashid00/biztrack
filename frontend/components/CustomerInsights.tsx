@@ -130,10 +130,18 @@ export const CustomerInsights = ({ businessId, onViewSegment }: CustomerInsights
   }
 
   return (
-    <Card>
+    <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white via-white to-slate-50 shadow-xl">
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" />
       <CardHeader>
-        <CardTitle>Customer Intelligence</CardTitle>
-        <CardDescription>RFM segmentation with automated retention strategies</CardDescription>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg">
+            <Users className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <CardTitle className="text-xl bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">Customer Intelligence</CardTitle>
+            <CardDescription className="text-slate-600 font-medium">RFM segmentation with automated retention strategies</CardDescription>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
@@ -179,52 +187,52 @@ export const CustomerInsights = ({ businessId, onViewSegment }: CustomerInsights
           })}
         </div>
 
-        <div className="space-y-3 pt-4 border-t border-border">
-          <div className="flex items-start space-x-3 p-3 rounded-lg bg-primary/10">
-            <div className="p-2 rounded-lg bg-primary/20">
-              <Star className="h-4 w-4 text-primary" />
+        {/* <div className="space-y-6 pt-4 border-t-2 border-slate-200/50">
+          <div className="flex items-start space-x-4 p-5 rounded-2xl border-2 border-emerald-200/50 bg-gradient-to-br from-emerald-50 to-white shadow-md hover:shadow-lg transition-all duration-300 group">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <Star className="h-5 w-5 text-white" />
             </div>
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-semibold">Top Customers</p>
-              <p className="text-xs text-muted-foreground">
-                {segments.find(s => s.rfm_segment === "Champions")?.customer_count || 0} champions 
-                generating ${segments.find(s => s.rfm_segment === "Champions")?.total_segment_revenue.toFixed(2) || 0}
+            <div className="flex-1 space-y-2">
+              <p className="text-sm font-bold text-slate-900">Top Customers</p>
+              <p className="text-xs text-slate-700 leading-relaxed">
+                <span className="font-bold">{segments.find(s => s.rfm_segment === "Champions")?.customer_count || 0}</span> champions 
+                generating <span className="font-bold">${segments.find(s => s.rfm_segment === "Champions")?.total_segment_revenue.toFixed(2) || 0}</span>
               </p>
-              <p className="text-xs font-medium text-primary">Keep them engaged with exclusive offers</p>
+              <p className="text-xs font-semibold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">Keep them engaged with exclusive offers</p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-3 p-3 rounded-lg bg-warning/10">
-            <div className="p-2 rounded-lg bg-warning/20">
-              <AlertCircle className="h-4 w-4 text-warning" />
+          <div className="flex items-start space-x-4 p-5 rounded-2xl border-2 border-amber-200/50 bg-gradient-to-br from-amber-50 to-white shadow-md hover:shadow-lg transition-all duration-300 group">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-amber-600 to-orange-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <AlertCircle className="h-5 w-5 text-white" />
             </div>
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-semibold">Churn Risk</p>
-              <p className="text-xs text-muted-foreground">
-                {segments.filter(s => 
+            <div className="flex-1 space-y-2">
+              <p className="text-sm font-bold text-slate-900">Churn Risk</p>
+              <p className="text-xs text-slate-700 leading-relaxed">
+                <span className="font-bold">{segments.filter(s => 
                   s.rfm_segment.includes("At Risk") || 
                   s.rfm_segment.includes("Cant Lose") ||
                   s.rfm_segment.includes("Hibernating")
-                ).reduce((sum, s) => sum + s.customer_count, 0)} customers need attention
+                ).reduce((sum, s) => sum + s.customer_count, 0)}</span> customers need attention
               </p>
-              <p className="text-xs font-medium text-warning">Run AI analysis for personalized win-back strategies</p>
+              <p className="text-xs font-semibold bg-gradient-to-r from-amber-700 to-orange-700 bg-clip-text text-transparent">Run AI analysis for personalized win-back strategies</p>
             </div>
-          </div>
+          </div> */}
 
-          <div className="flex items-start space-x-3 p-3 rounded-lg bg-success/10">
-            <div className="p-2 rounded-lg bg-success/20">
-              <TrendingUp className="h-4 w-4 text-success" />
+          {/* <div className="flex items-start space-x-4 p-5 rounded-2xl border-2 border-blue-200/50 bg-gradient-to-br from-blue-50 to-white shadow-md hover:shadow-lg transition-all duration-300 group">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-semibold">Growth Opportunity</p>
-              <p className="text-xs text-muted-foreground">
-                {segments.find(s => s.rfm_segment === "Potential Loyalists")?.customer_count || 0} potential 
+            <div className="flex-1 space-y-2">
+              <p className="text-sm font-bold text-slate-900">Growth Opportunity</p>
+              <p className="text-xs text-slate-700 leading-relaxed">
+                <span className="font-bold">{segments.find(s => s.rfm_segment === "Potential Loyalists")?.customer_count || 0}</span> potential 
                 loyalists showing promise
               </p>
-              <p className="text-xs font-medium text-success">Upsell and cross-sell opportunities available</p>
+              <p className="text-xs font-semibold bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">Upsell and cross-sell opportunities available</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );
