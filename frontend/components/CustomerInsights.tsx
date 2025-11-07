@@ -131,7 +131,6 @@ export const CustomerInsights = ({ businessId, onViewSegment }: CustomerInsights
 
   return (
     <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white via-white to-slate-50 shadow-xl">
-      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" />
       <CardHeader>
         <div className="flex items-center gap-3 mb-2">
           <div className="p-2 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg">

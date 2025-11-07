@@ -148,8 +148,7 @@ export const CustomerDetailModal = ({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
       <div className="bg-gradient-to-br from-white via-white to-slate-50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col border-2 border-slate-200/50">
         {/* Header */}
-        <div className="relative flex items-center justify-between p-6 border-b-2 border-slate-200/50 bg-gradient-to-r from-white to-slate-50">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600" />
+        <div className="flex items-center justify-between p-6 border-b-2 border-slate-200/50 bg-gradient-to-r from-white to-slate-50">
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 shadow-lg">
               <User className="h-6 w-6 text-white" />
@@ -294,7 +293,6 @@ export const CustomerDetailModal = ({
               {/* Purchase Behavior & CLV */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 shadow-lg">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-600 to-purple-600" />
                   <CardHeader>
                     <CardTitle className="text-lg font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">Purchase Behavior</CardTitle>
                   </CardHeader>
@@ -332,7 +330,6 @@ export const CustomerDetailModal = ({
 
                 {customer.clv && (
                   <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-emerald-50/30 shadow-lg">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-600 to-teal-600" />
                     <CardHeader>
                       <CardTitle className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">Customer Lifetime Value</CardTitle>
                     </CardHeader>
@@ -364,7 +361,6 @@ export const CustomerDetailModal = ({
               {/* AI Insights */}
               {customer.insights && customer.insights.length > 0 && (
                 <Card className="border-2 border-purple-200/50 bg-gradient-to-br from-purple-50 to-white shadow-lg">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 to-pink-600" />
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 shadow-md">

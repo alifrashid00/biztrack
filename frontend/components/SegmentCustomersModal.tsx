@@ -93,13 +93,7 @@ export const SegmentCustomersModal = ({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
       <div className="bg-gradient-to-br from-white via-white to-blue-50/30 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col border-2 border-slate-200/50">
         {/* Header */}
-        <div className="relative flex items-center justify-between p-6 border-b-2 border-slate-200/50 bg-gradient-to-r from-white to-blue-50/30">
-          <div className={`absolute top-0 left-0 right-0 h-1.5 ${
-            segment === 'Champions' ? 'bg-gradient-to-r from-emerald-600 to-teal-600' :
-            segment === 'Loyal Customers' ? 'bg-gradient-to-r from-blue-600 to-cyan-600' :
-            segment.includes('At Risk') ? 'bg-gradient-to-r from-amber-600 to-orange-600' :
-            'bg-gradient-to-r from-purple-600 to-pink-600'
-          }`} />
+        <div className="flex items-center justify-between p-6 border-b-2 border-slate-200/50 bg-gradient-to-r from-white to-blue-50/30">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className={`p-3 rounded-xl shadow-lg ${
@@ -156,12 +150,6 @@ export const SegmentCustomersModal = ({
             <div className="space-y-4">
               {customers.map((customer) => (
                 <Card key={customer.customer_id} className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 hover:shadow-xl transition-all duration-300 group">
-                  <div className={`absolute top-0 left-0 right-0 h-1 ${
-                    segment === 'Champions' ? 'bg-gradient-to-r from-emerald-600 to-teal-600' :
-                    segment === 'Loyal Customers' ? 'bg-gradient-to-r from-blue-600 to-cyan-600' :
-                    segment.includes('At Risk') ? 'bg-gradient-to-r from-amber-600 to-orange-600' :
-                    'bg-gradient-to-r from-purple-600 to-pink-600'
-                  }`} />
                   <CardContent className="pt-5">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4 flex-1">

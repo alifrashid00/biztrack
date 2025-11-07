@@ -83,8 +83,7 @@ export const AtRiskCustomersModal = ({
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
       <div className="bg-gradient-to-br from-white via-white to-amber-50/30 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col border-2 border-slate-200/50">
         {/* Header */}
-        <div className="relative flex items-center justify-between p-6 border-b-2 border-slate-200/50 bg-gradient-to-r from-white to-amber-50/30">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-600 via-orange-600 to-red-600" />
+        <div className="flex items-center justify-between p-6 border-b-2 border-slate-200/50 bg-gradient-to-r from-white to-amber-50/30">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="p-3 rounded-xl bg-gradient-to-br from-amber-600 to-orange-600 shadow-lg">
@@ -131,9 +130,6 @@ export const AtRiskCustomersModal = ({
                   <Card key={customer.customer_id} className={`border-2 hover:shadow-xl transition-all duration-300 group ${
                     customer.churn_risk_score >= 70 ? 'border-red-200/50 bg-gradient-to-br from-red-50 to-white' : 'border-amber-200/50 bg-gradient-to-br from-amber-50 to-white'
                   }`}>
-                    <div className={`absolute top-0 left-0 right-0 h-1 ${
-                      customer.churn_risk_score >= 70 ? 'bg-gradient-to-r from-red-600 to-rose-600' : 'bg-gradient-to-r from-amber-600 to-orange-600'
-                    }`} />
                     <CardContent className="pt-5">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-4 flex-1">
