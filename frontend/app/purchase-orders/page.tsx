@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -88,8 +88,9 @@ interface PurchaseOrder {
   }>;
 }
 
-export default function RecordPurchasePage() {
+function RecordPurchasePageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -162,6 +163,37 @@ export default function RecordPurchasePage() {
     const newTotal = cart.reduce((sum, item) => sum + item.line_total, 0);
     setTotal(newTotal);
   }, [cart]);
+
+  // Handle URL parameters for pre-selected products
+  useEffect(() => {
+    const businessParam = searchParams.get('business');
+    const productsParam = searchParams.get('products');
+
+    if (businessParam) {
+      setSelectedBusiness(businessParam);
+    }
+
+    if (productsParam && products.length > 0) {
+      const productIds = productsParam.split(',');
+      const preSelectedProducts = products.filter(product =>
+        product.product_ids.some(id => productIds.includes(id))
+      );
+
+      // Add pre-selected products to cart
+      const cartItems: CartItem[] = preSelectedProducts.map(product => ({
+        product_name: product.product_name,
+        brand_name: product.brand_name,
+        category_name: product.category_name,
+        quantity: 1, // Default quantity
+        unit_cost: product.price, // Use the cost price
+        line_total: product.price,
+        brand_id: product.brand_id,
+        category_id: product.category_id
+      }));
+
+      setCart(cartItems);
+    }
+  }, [searchParams, products]);
 
   const fetchBusinesses = async () => {
     try {
@@ -1138,5 +1170,15 @@ export default function RecordPurchasePage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function RecordPurchasePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>}>
+      <RecordPurchasePageContent />
+    </Suspense>
   );
 }

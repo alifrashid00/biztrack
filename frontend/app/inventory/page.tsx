@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Package, AlertTriangle, TrendingDown, PackageCheck, Loader2, Store, Search, Filter, Sparkles, Edit, Check, ChevronsUpDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -95,6 +96,10 @@ const InventoryPage = () => {
   // Dropdown open states
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [brandDropdownOpen, setBrandDropdownOpen] = useState(false);
+
+  // Product selection state
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   // Modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -285,6 +290,40 @@ const InventoryPage = () => {
     return brand ? `${brand.brand_name} (${brand.product_count})` : "All Brands";
   };
 
+  // Product selection handlers
+  const handleProductSelect = (product: Product, checked: boolean) => {
+    if (checked) {
+      setSelectedProducts(prev => [...prev, product]);
+    } else {
+      setSelectedProducts(prev => prev.filter(p => p.product_id !== product.product_id));
+    }
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectAll(checked);
+    if (checked) {
+      setSelectedProducts(products);
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
+  const handleMarkForSale = () => {
+    if (selectedProducts.length === 0) return;
+
+    // Navigate to sales page with selected products and business
+    const productIds = selectedProducts.map(p => p.product_id).join(',');
+    router.push(`/sales?business=${selectedBusiness}&products=${productIds}`);
+  };
+
+  const handleMarkForPurchase = () => {
+    if (selectedProducts.length === 0) return;
+
+    // Navigate to purchase orders page with selected products and business
+    const productIds = selectedProducts.map(p => p.product_id).join(',');
+    router.push(`/purchase-orders?business=${selectedBusiness}&products=${productIds}`);
+  };
+
   if (authLoading || loadingBusinesses) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -432,6 +471,21 @@ const InventoryPage = () => {
                     <CardTitle>Current Inventory</CardTitle>
                     <CardDescription>View and manage your product inventory</CardDescription>
                   </div>
+                  {selectedProducts.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">
+                        {selectedProducts.length} product{selectedProducts.length !== 1 ? 's' : ''} selected
+                      </span>
+                      <div className="flex gap-2">
+                        <Button onClick={handleMarkForSale} size="sm" variant="default">
+                          Mark for Sale
+                        </Button>
+                        <Button onClick={handleMarkForPurchase} size="sm" variant="outline">
+                          Mark for Purchase
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Search and Filters */}
@@ -577,6 +631,12 @@ const InventoryPage = () => {
                       <Table>
                         <TableHeader>
                           <TableRow>
+                            <TableHead className="w-12">
+                              <Checkbox
+                                checked={selectAll}
+                                onCheckedChange={handleSelectAll}
+                              />
+                            </TableHead>
                             <TableHead>Product ID</TableHead>
                             <TableHead>Product Name</TableHead>
                             <TableHead>Category</TableHead>
@@ -586,6 +646,7 @@ const InventoryPage = () => {
                             <TableHead className="text-right">Selling Price</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Location</TableHead>
+                            <TableHead className="w-12">Actions</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -593,8 +654,14 @@ const InventoryPage = () => {
                             <TableRow 
                               key={product.product_id} 
                               className="cursor-pointer hover:bg-muted/50"
-                              onClick={() => handleEditProduct(product)}
                             >
+                              <TableCell>
+                                <Checkbox
+                                  checked={selectedProducts.some(p => p.product_id === product.product_id)}
+                                  onCheckedChange={(checked: boolean) => handleProductSelect(product, checked)}
+                                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                                />
+                              </TableCell>
                               <TableCell className="font-mono text-sm">{product.product_id}</TableCell>
                               <TableCell className="font-medium">{product.product_name}</TableCell>
                               <TableCell>{product.product_category?.category_name || '-'}</TableCell>
@@ -613,8 +680,8 @@ const InventoryPage = () => {
                                   {product.status || 'N/A'}
                                 </span>
                               </TableCell>
-                              <TableCell className="flex items-center justify-between">
-                                <span>{product.stored_location || '-'}</span>
+                              <TableCell>{product.stored_location || '-'}</TableCell>
+                              <TableCell>
                                 <Button
                                   variant="ghost"
                                   size="sm"

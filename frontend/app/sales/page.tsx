@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -60,7 +60,7 @@ interface SalesOrder {
     customer_name: string;
     email: string;
     phone: string;
-  };
+  } | null;
   sales_order_items: Array<{
     product_id: string;
     line_total: number;
@@ -71,8 +71,9 @@ interface SalesOrder {
   }>;
 }
 
-export default function RecordSalePage() {
+function RecordSalePageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -128,6 +129,36 @@ export default function RecordSalePage() {
     const newTotal = cart.reduce((sum, item) => sum + item.line_total, 0);
     setTotal(newTotal);
   }, [cart]);
+
+  // Handle URL parameters for pre-selected products
+  useEffect(() => {
+    const businessParam = searchParams.get('business');
+    const productsParam = searchParams.get('products');
+
+    if (businessParam) {
+      setSelectedBusiness(businessParam);
+    }
+
+    if (productsParam && products.length > 0) {
+      const productIds = productsParam.split(',');
+      const preSelectedProducts = products.filter(product =>
+        product.product_ids.some(id => productIds.includes(id))
+      );
+
+      // Add pre-selected products to cart
+      const cartItems: CartItem[] = preSelectedProducts.map(product => ({
+        product_name: product.product_name,
+        brand_name: product.brand_name,
+        category_name: product.category_name,
+        quantity: 1,
+        unit_price: product.selling_price,
+        line_total: product.selling_price,
+        product_ids: product.product_ids
+      }));
+
+      setCart(cartItems);
+    }
+  }, [searchParams, products]);
 
   const fetchBusinesses = async () => {
     try {
@@ -826,8 +857,14 @@ export default function RecordSalePage() {
                               <div>
                                 <h4 className="font-semibold">Order #{sale.order_id}</h4>
                                 <p className="text-sm text-gray-600">
-                                  {sale.customer.customer_name}
-                                  {sale.customer.email && ` (${sale.customer.email})`}
+                                  {sale.customer ? (
+                                    <>
+                                      {sale.customer.customer_name}
+                                      {sale.customer.email && ` (${sale.customer.email})`}
+                                    </>
+                                  ) : (
+                                    'Unknown Customer'
+                                  )}
                                 </p>
                                 <p className="text-xs text-gray-500">
                                   {new Date(sale.order_date).toLocaleDateString()} at {new Date(sale.order_date).toLocaleTimeString()}
@@ -905,15 +942,15 @@ export default function RecordSalePage() {
                   <CardContent className="space-y-2">
                     <div className="flex justify-between">
                       <span className="font-medium">Name:</span>
-                      <span>{selectedSale.customer.customer_name}</span>
+                      <span>{selectedSale.customer ? selectedSale.customer.customer_name : 'Unknown Customer'}</span>
                     </div>
-                    {selectedSale.customer.email && (
+                    {selectedSale.customer?.email && (
                       <div className="flex justify-between">
                         <span className="font-medium">Email:</span>
                         <span>{selectedSale.customer.email}</span>
                       </div>
                     )}
-                    {selectedSale.customer.phone && (
+                    {selectedSale.customer?.phone && (
                       <div className="flex justify-between">
                         <span className="font-medium">Phone:</span>
                         <span>{selectedSale.customer.phone}</span>
@@ -1042,5 +1079,15 @@ export default function RecordSalePage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function RecordSalePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>}>
+      <RecordSalePageContent />
+    </Suspense>
   );
 }
