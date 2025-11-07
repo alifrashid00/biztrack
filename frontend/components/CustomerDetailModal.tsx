@@ -145,21 +145,26 @@ export const CustomerDetailModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div className="bg-gradient-to-br from-white via-white to-slate-50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col border-2 border-slate-200/50 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground">Customer Details</h2>
-            <p className="text-sm text-muted-foreground">Complete customer profile and insights</p>
+        <div className="flex items-center justify-between p-6 border-b-2 border-slate-200/50 bg-gradient-to-r from-white to-slate-50">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 shadow-lg">
+              <User className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-cyan-700 bg-clip-text text-transparent">Customer Details</h2>
+              <p className="text-sm font-medium text-slate-600">Complete customer profile and insights</p>
+            </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-100">
+            <X className="h-5 w-5 text-slate-600" />
           </Button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 rounded-b-2xl bg-gradient-to-br from-white via-white to-slate-50">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -172,7 +177,7 @@ export const CustomerDetailModal = ({
           ) : customer ? (
             <div className="space-y-6">
               {/* Customer Info */}
-              <Card>
+              <Card className="rounded-xl overflow-hidden">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -203,25 +208,25 @@ export const CustomerDetailModal = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {customer.email && (
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">{customer.email}</span>
+                        <Mail className="h-4 w-4 text-slate-600" />
+                        <span className="text-sm text-slate-700 font-medium">{customer.email}</span>
                       </div>
                     )}
                     {customer.phone && (
                       <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">{customer.phone}</span>
+                        <Phone className="h-4 w-4 text-slate-600" />
+                        <span className="text-sm text-slate-700 font-medium">{customer.phone}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">
+                      <Calendar className="h-4 w-4 text-slate-600" />
+                      <span className="text-sm text-slate-700 font-medium">
                         Customer since {new Date(customer.first_purchase_date).toLocaleDateString()}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">
+                      <Calendar className="h-4 w-4 text-slate-600" />
+                      <span className="text-sm text-slate-700 font-medium">
                         Last purchase {new Date(customer.last_purchase_date).toLocaleDateString()}
                       </span>
                     </div>
@@ -286,10 +291,10 @@ export const CustomerDetailModal = ({
               </div>
 
               {/* Purchase Behavior & CLV */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 shadow-lg rounded-xl">
                   <CardHeader>
-                    <CardTitle className="text-base">Purchase Behavior</CardTitle>
+                    <CardTitle className="text-lg font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">Purchase Behavior</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between items-center">
@@ -324,9 +329,9 @@ export const CustomerDetailModal = ({
                 </Card>
 
                 {customer.clv && (
-                  <Card>
+                  <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-emerald-50/30 shadow-lg rounded-xl">
                     <CardHeader>
-                      <CardTitle className="text-base">Customer Lifetime Value</CardTitle>
+                      <CardTitle className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">Customer Lifetime Value</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="flex justify-between items-center">
@@ -355,12 +360,14 @@ export const CustomerDetailModal = ({
 
               {/* AI Insights */}
               {customer.insights && customer.insights.length > 0 && (
-                <Card>
+                <Card className="border-2 border-purple-200/50 bg-gradient-to-br from-purple-50 to-white shadow-lg rounded-xl">
                   <CardHeader>
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Star className="h-5 w-5 text-primary" />
-                      AI Recommendations
-                    </CardTitle>
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 shadow-md">
+                        <Star className="h-5 w-5 text-white" />
+                      </div>
+                      <CardTitle className="text-lg font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent">AI Recommendations</CardTitle>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
@@ -386,7 +393,7 @@ export const CustomerDetailModal = ({
 
               {/* Product Recommendations */}
               {customer.recommendations && customer.recommendations.length > 0 && (
-                <Card>
+                <Card className="rounded-xl overflow-hidden">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                       <Package className="h-5 w-5 text-primary" />
@@ -413,7 +420,7 @@ export const CustomerDetailModal = ({
 
               {/* Recent Orders */}
               {customer.recent_orders && customer.recent_orders.length > 0 && (
-                <Card>
+                <Card className="rounded-xl overflow-hidden">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                       <ShoppingCart className="h-5 w-5 text-primary" />
@@ -443,7 +450,7 @@ export const CustomerDetailModal = ({
 
               {/* Spending Trends */}
               {customer.trends && customer.trends.length > 0 && (
-                <Card>
+                <Card className="rounded-xl overflow-hidden">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                       <TrendingUp className="h-5 w-5 text-primary" />
@@ -483,9 +490,12 @@ export const CustomerDetailModal = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 p-6 border-t border-gray-200 bg-white">
-          <Button variant="outline" onClick={onClose}>Close</Button>
-          <Button>Send Email</Button>
+        <div className="flex items-center justify-end gap-3 p-6 border-t-2 border-slate-200/50 bg-gradient-to-r from-white to-slate-50">
+          <Button variant="outline" onClick={onClose} className="border-2 hover:bg-slate-50">Close</Button>
+          <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg">
+            <Mail className="h-4 w-4 mr-2" />
+            Send Email
+          </Button>
         </div>
       </div>
     </div>
