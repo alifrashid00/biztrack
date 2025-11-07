@@ -320,12 +320,12 @@ export default function UnifiedBusinessDataPage() {
                                                                     </h4>
                                                                     <div className="flex items-center gap-4 text-xs text-slate-600">
                                                                         <div className="flex items-center gap-1.5">
-                                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
                                                                             <span className="font-semibold">{table.record_count.toLocaleString()}</span>
                                                                             <span>records</span>
                                                                         </div>
                                                                         <div className="flex items-center gap-1.5">
-                                                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                                                                             <span className="font-semibold">{table.columns.length}</span>
                                                                             <span>columns</span>
                                                                         </div>
@@ -345,17 +345,17 @@ export default function UnifiedBusinessDataPage() {
                                                             {selectedTable?.table_name === table.table_name && table.sample_data.length > 0 && (
                                                                 <div className="mt-6 overflow-x-auto">
                                                                     <div className="inline-block min-w-full align-middle">
-                                                                        <div className="overflow-hidden border border-slate-200/60 rounded-2xl shadow-sm bg-white">
+                                                                        <div className="overflow-hidden border-2 border-slate-200/50 rounded-xl shadow-lg bg-white">
                                                                             <table className="min-w-full" style={{ borderCollapse: 'separate', borderSpacing: 0 }}>
                                                                                 <thead>
-                                                                                    <tr>
-                                                                                        <th className="px-5 py-3.5 text-center text-xs font-semibold text-slate-600 bg-slate-50/80 border-b border-r border-slate-200/60 sticky left-0 z-10" style={{ minWidth: '70px', maxWidth: '70px' }}>
-                                                                                            <span className="text-slate-500">#</span>
+                                                                                    <tr className="bg-gradient-to-r from-slate-50 to-blue-50/30">
+                                                                                        <th className="px-4 py-3 text-center text-xs font-bold text-slate-700 border-b-2 border-r border-slate-200/50 sticky left-0 z-10 bg-slate-50" style={{ minWidth: '60px', maxWidth: '60px' }}>
+                                                                                            #
                                                                                         </th>
                                                                                         {table.columns.map((column, idx) => (
-                                                                                            <th key={idx} className="px-5 py-3.5 text-left text-xs font-semibold text-slate-700 bg-slate-50/80 border-b border-r border-slate-200/60 last:border-r-0" style={{ minWidth: '180px' }}>
+                                                                                            <th key={idx} className="px-4 py-3 text-left text-xs font-bold text-slate-700 border-b-2 border-r border-slate-200/50 last:border-r-0 bg-gradient-to-r from-slate-50 to-blue-50/30" style={{ minWidth: '150px' }}>
                                                                                                 <div className="flex items-center gap-2">
-                                                                                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                                                                                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
                                                                                                     <span className="uppercase tracking-wide">{column}</span>
                                                                                                 </div>
                                                                                             </th>
@@ -364,9 +364,9 @@ export default function UnifiedBusinessDataPage() {
                                                                                 </thead>
                                                                                 <tbody>
                                                                                     {table.sample_data.map((row, rowIdx) => (
-                                                                                        <tr key={rowIdx} className={`group ${rowIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
-                                                                                            <td className="px-5 py-3 text-center text-xs font-medium text-slate-500 bg-slate-50/50 border-b border-r border-slate-200/60 sticky left-0 z-10">
-                                                                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-slate-100 text-slate-600 font-semibold text-xs">
+                                                                                        <tr key={rowIdx} className={`group transition-all duration-150 ${rowIdx % 2 === 0 ? 'bg-white hover:bg-blue-50/30' : 'bg-slate-50/30 hover:bg-blue-50/40'}`}>
+                                                                                            <td className="px-4 py-2.5 text-center text-xs font-semibold text-slate-600 border-b border-r border-slate-200/50 sticky left-0 z-10 bg-inherit">
+                                                                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-blue-50 text-blue-700 font-bold text-xs">
                                                                                                     {rowIdx + 1}
                                                                                                 </span>
                                                                                             </td>
@@ -375,13 +375,13 @@ export default function UnifiedBusinessDataPage() {
                                                                                                 return (
                                                                                                     <td 
                                                                                                         key={cellIdx} 
-                                                                                                        className="border-b border-r border-slate-200/60 p-0 last:border-r-0 relative"
+                                                                                                        className="border-b border-r border-slate-200/50 last:border-r-0 p-0"
                                                                                                     >
-                                                                                                        <div className="px-5 py-3 text-sm text-slate-700 min-h-[48px] flex items-center transition-all duration-200 hover:bg-slate-100/50 hover:shadow-sm hover:-translate-y-0.5 cursor-default">
+                                                                                                        <div className="px-4 py-2.5 text-sm text-slate-800 min-h-[42px] flex items-center font-medium">
                                                                                     {value === '' || value === null || value === undefined ? (
                                                                                         <span className="text-slate-400 italic text-xs">—</span>
                                                                                     ) : (
-                                                                                        <span className="font-normal text-slate-800">
+                                                                                        <span>
                                                                                             {String(value)}
                                                                                         </span>
                                                                                     )}
@@ -395,22 +395,22 @@ export default function UnifiedBusinessDataPage() {
                                                                             </table>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="mt-5 flex items-center justify-between px-1">
+                                                                    <div className="mt-4 flex items-center justify-between px-2">
                                                                         <div className="flex items-center gap-3">
-                                                                            <div className="flex items-center gap-2 text-xs text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200/60 shadow-sm">
-                                                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                                                                                <span className="font-semibold text-slate-700">{table.record_count.toLocaleString()}</span>
-                                                                                <span className="text-slate-500">total rows</span>
+                                                                            <div className="flex items-center gap-2 text-xs bg-gradient-to-r from-blue-50 to-indigo-50 text-slate-700 px-3 py-2 rounded-lg border border-blue-200/50 shadow-sm">
+                                                                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                                                                <span className="font-bold">{table.record_count.toLocaleString()}</span>
+                                                                                <span className="font-medium">total rows</span>
                                                                             </div>
-                                                                            <div className="flex items-center gap-2 text-xs text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200/60 shadow-sm">
-                                                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                                                                                <span className="font-semibold text-slate-700">{table.sample_data.length}</span>
-                                                                                <span className="text-slate-500">showing</span>
+                                                                            <div className="flex items-center gap-2 text-xs bg-gradient-to-r from-emerald-50 to-teal-50 text-slate-700 px-3 py-2 rounded-lg border border-emerald-200/50 shadow-sm">
+                                                                                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                                                                <span className="font-bold">{table.sample_data.length}</span>
+                                                                                <span className="font-medium">showing</span>
                                                                             </div>
                                                                         </div>
-                                                                        <div className="flex items-center gap-2 text-xs text-slate-500 bg-amber-50/50 px-3 py-1.5 rounded-lg border border-amber-200/40">
-                                                                            <Eye className="h-3.5 w-3.5 text-amber-600" />
-                                                                            <span className="font-medium text-slate-600">Read-only</span>
+                                                                        <div className="flex items-center gap-2 text-xs bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 px-3 py-2 rounded-lg border border-amber-200/50 shadow-sm">
+                                                                            <Eye className="h-3.5 w-3.5" />
+                                                                            <span className="font-semibold">Read-only view</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>

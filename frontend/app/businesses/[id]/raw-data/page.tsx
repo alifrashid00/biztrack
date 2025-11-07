@@ -389,10 +389,10 @@ export default function BusinessRawDataPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
-                    <p className="mt-4 text-gray-600">Loading...</p>
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mb-4"></div>
+                    <p className="text-slate-600 font-medium">Loading...</p>
                 </div>
             </div>
         );
@@ -403,24 +403,29 @@ export default function BusinessRawDataPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             {/* Header */}
-            <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+            <header className="bg-white/80 backdrop-blur-sm border-b-2 border-slate-200/50 shadow-sm sticky top-0 z-50">
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
                             <Button variant="ghost" size="icon" onClick={() => router.push(`/businesses/${businessId}`)}>
                                 <ArrowLeft className="h-5 w-5" />
                             </Button>
-                            <div>
-                                <h1 className="text-2xl font-bold text-foreground">Raw Data</h1>
-                                <p className="text-sm text-muted-foreground">View and manage your uploaded Excel data</p>
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 shadow-lg">
+                                    <Database className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">Raw Data</h1>
+                                    <p className="text-sm text-slate-600 font-medium">View and manage your uploaded Excel data</p>
+                                </div>
                             </div>
                         </div>
 
                         {/* Business Selector */}
                         <div className="flex items-center gap-2">
-                            <Store className="h-5 w-5 text-muted-foreground" />
+                            <Store className="h-5 w-5 text-slate-600" />
                             <select
                                 value={businessId}
                                 onChange={(e) => {
@@ -456,20 +461,26 @@ export default function BusinessRawDataPage() {
                 )}
 
                 {loadingBusiness ? (
-                    <div className="flex items-center justify-center py-8">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <div className="flex items-center justify-center py-20">
+                        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                        <span className="ml-2 text-slate-600">Loading business details...</span>
                     </div>
                 ) : business ? (
                     <>
                         {/* Business Info Card */}
                         <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 shadow-xl rounded-xl overflow-hidden">
-                            <CardHeader>
+                            <CardHeader className="pb-4">
                                 <div className="flex items-center justify-between">
-                                    <div>
-                                        <CardTitle className="text-xl font-bold text-slate-800">{business.name} - Raw Data</CardTitle>
-                                        <CardDescription className="text-slate-600">
-                                            Excel-uploaded data collections
-                                        </CardDescription>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-600 to-green-600 shadow-lg">
+                                            <Store className="h-5 w-5 text-white" />
+                                        </div>
+                                        <div>
+                                            <CardTitle className="text-xl font-bold text-slate-800">{business.name} - Raw Data</CardTitle>
+                                            <CardDescription className="text-slate-600">
+                                                Excel-uploaded data collections
+                                            </CardDescription>
+                                        </div>
                                     </div>
                                     <div className="flex gap-3">
                                         <Button
@@ -486,14 +497,20 @@ export default function BusinessRawDataPage() {
 
                         {/* Excel Upload Section */}
                         <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 shadow-xl rounded-xl overflow-hidden">
-                            <CardHeader>
-                                <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                                    <Upload className="h-5 w-5 text-indigo-600" />
-                                    Upload Excel Files
-                                </CardTitle>
-                                <CardDescription className="text-slate-600">
-                                    Upload Excel files (.xls, .xlsx) to create MongoDB collections. Each sheet will be converted to a separate collection with documents mapped from the rows and columns.
-                                </CardDescription>
+                            <CardHeader className="pb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 shadow-lg">
+                                        <Upload className="h-5 w-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                            Upload Excel Files
+                                        </CardTitle>
+                                        <CardDescription className="text-slate-600">
+                                            Upload Excel files (.xls, .xlsx) to create MongoDB collections. Each sheet will be converted to a separate collection with documents mapped from the rows and columns.
+                                        </CardDescription>
+                                    </div>
+                                </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="flex items-center gap-4 mb-4">
@@ -552,86 +569,114 @@ export default function BusinessRawDataPage() {
 
                         {/* Collections/Data Section */}
                         <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 shadow-xl rounded-xl overflow-hidden">
-                            <CardHeader>
-                                <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                                    <FileSpreadsheet className="h-5 w-5 text-emerald-600" />
-                                    Uploaded Data Collections
-                                </CardTitle>
-                                <CardDescription className="text-slate-600">
-                                    View and manage your uploaded Excel data
-                                </CardDescription>
+                            <CardHeader className="pb-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-600 to-teal-600 shadow-lg">
+                                        <FileSpreadsheet className="h-5 w-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                            Uploaded Data Collections
+                                        </CardTitle>
+                                        <CardDescription className="text-slate-600">
+                                            View and manage your uploaded Excel data
+                                        </CardDescription>
+                                    </div>
+                                </div>
                             </CardHeader>
                             <CardContent>
                                 {loadingData ? (
-                                    <div className="flex items-center justify-center py-8">
-                                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                    <div className="flex items-center justify-center py-20">
+                                        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
                                         <span className="ml-2 text-slate-600">Loading data...</span>
                                     </div>
                                 ) : sheetData.length > 0 ? (
                                     <div className="space-y-4">
                                         {sheetData.map((sheet, index) => (
-                                            <div key={index} className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50/50 transition-colors">
+                                            <div key={index} className="border border-slate-200/70 rounded-xl p-6 hover:border-slate-300/80 transition-all duration-200 shadow-sm hover:shadow-md bg-white">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex-1">
                                                             <button
                                                                 onClick={() => setSelectedSheet(selectedSheet?.collectionName === sheet.collectionName ? null : sheet)}
-                                                                className="text-left w-full"
+                                                                className="text-left w-full group"
                                                             >
-                                                                <h4 className="text-sm font-medium text-indigo-600 hover:text-indigo-900">
-                                                                    {sheet.sheetName}
-                                                                </h4>
-                                                                <p className="text-xs text-gray-500 mt-1">
-                                                                    Collection: {sheet.collectionName} • {sheet.documentCount} documents
-                                                                </p>
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="p-2.5 rounded-lg bg-gradient-to-br from-slate-600 to-slate-700 shadow-sm group-hover:shadow-md transition-all duration-200">
+                                                                        <FileSpreadsheet className="h-5 w-5 text-white" />
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <h4 className="text-base font-semibold text-slate-800 group-hover:text-slate-900 transition-colors duration-200 mb-1">
+                                                                            {sheet.sheetName}
+                                                                        </h4>
+                                                                        <p className="text-xs text-slate-600">
+                                                                            Collection: <span className="font-semibold">{sheet.collectionName}</span> • <span className="font-semibold">{sheet.documentCount.toLocaleString()}</span> documents
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="ml-4">
+                                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${selectedSheet?.collectionName === sheet.collectionName ? 'bg-slate-100 rotate-180' : 'bg-slate-50 group-hover:bg-slate-100'}`}>
+                                                                            <svg className={`w-4 h-4 transition-colors duration-200 ${selectedSheet?.collectionName === sheet.collectionName ? 'text-slate-700' : 'text-slate-400 group-hover:text-slate-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                                            </svg>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </button>
 
                                                             {/* Preview Data Table - Excel-like View */}
                                                             {selectedSheet?.collectionName === sheet.collectionName && sheet.preview.length > 0 && (
-                                                                <div className="mt-4 overflow-x-auto">
+                                                                <div className="mt-6 overflow-x-auto">
                                                                     <div className="inline-block min-w-full align-middle">
-                                                                        <div className="overflow-hidden border border-gray-300 rounded-lg">
-                                                                            <table className="min-w-full divide-y divide-gray-300" style={{ borderCollapse: 'collapse' }}>
-                                                                                <thead className="bg-gray-100">
-                                                                                    <tr>
-                                                                                        <th className="px-2 py-2 text-center text-xs font-bold text-gray-700 border-r border-gray-300 bg-gray-200 sticky left-0 z-10" style={{ minWidth: '50px', maxWidth: '50px' }}>
+                                                                        <div className="overflow-hidden border-2 border-slate-200/50 rounded-xl shadow-lg bg-white">
+                                                                            <table className="min-w-full" style={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+                                                                                <thead>
+                                                                                    <tr className="bg-gradient-to-r from-slate-50 to-blue-50/30">
+                                                                                        <th className="px-4 py-3 text-center text-xs font-bold text-slate-700 border-b-2 border-r border-slate-200/50 sticky left-0 z-10 bg-slate-50" style={{ minWidth: '60px', maxWidth: '60px' }}>
                                                                                             #
                                                                                         </th>
-                                                                                        <th className="px-2 py-2 text-center text-xs font-medium text-gray-700 border-r border-gray-300" style={{ minWidth: '60px', maxWidth: '60px' }}>
-                                                                                            Actions
+                                                                                        <th className="px-4 py-3 text-center text-xs font-bold text-slate-700 border-b-2 border-r border-slate-200/50 bg-gradient-to-r from-slate-50 to-blue-50/30" style={{ minWidth: '80px', maxWidth: '80px' }}>
+                                                                                            <span className="uppercase tracking-wide">Actions</span>
                                                                                         </th>
                                                                                         {Object.keys(sheet.preview[0]).filter(key => key !== '_id' && key !== '_rowNumber').map((header, idx) => (
-                                                                                            <th key={idx} className="px-3 py-2 text-left text-xs font-semibold text-gray-700 border-r border-gray-300 bg-gray-50" style={{ minWidth: '120px' }}>
-                                                                                                {header}
+                                                                                            <th key={idx} className="px-4 py-3 text-left text-xs font-bold text-slate-700 border-b-2 border-r border-slate-200/50 last:border-r-0 bg-gradient-to-r from-slate-50 to-blue-50/30" style={{ minWidth: '150px' }}>
+                                                                                                <div className="flex items-center gap-2">
+                                                                                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                                                                                    <span className="uppercase tracking-wide">{header}</span>
+                                                                                                </div>
                                                                                             </th>
                                                                                         ))}
                                                                                     </tr>
                                                                                 </thead>
-                                                                                <tbody className="bg-white divide-y divide-gray-200">
+                                                                                <tbody>
                                                                                     {sheet.preview.slice(0, 100).map((row, rowIdx) => (
-                                                                                        <tr key={rowIdx} className="hover:bg-blue-50 transition-colors">
-                                                                                            <td className="px-2 py-1 text-center text-xs font-medium text-gray-500 border-r border-gray-300 bg-gray-50 sticky left-0 z-10">
-                                                                                                {row._rowNumber || rowIdx + 1}
+                                                                                        <tr key={rowIdx} className={`group transition-all duration-150 ${rowIdx % 2 === 0 ? 'bg-white hover:bg-blue-50/30' : 'bg-slate-50/30 hover:bg-blue-50/40'}`}>
+                                                                                            <td className="px-4 py-2.5 text-center text-xs font-semibold text-slate-600 border-b border-r border-slate-200/50 sticky left-0 z-10 bg-inherit">
+                                                                                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-blue-50 text-blue-700 font-bold text-xs">
+                                                                                                    {row._rowNumber || rowIdx + 1}
+                                                                                                </span>
                                                                                             </td>
-                                                                                            <td className="px-2 py-1 text-center border-r border-gray-300 bg-white">
+                                                                                            <td className="px-3 py-2.5 text-center border-b border-r border-slate-200/50">
                                                                                                 <button
                                                                                                     onClick={() => handleDeleteDocument(row._id, sheet.collectionName)}
-                                                                                                    className="text-red-500 hover:text-red-700 text-xs hover:bg-red-50 px-2 py-1 rounded"
+                                                                                                    className="inline-flex items-center justify-center w-7 h-7 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150"
                                                                                                     title="Delete row"
                                                                         >
-                                                                            🗑️
+                                                                            <Trash2 className="h-3.5 w-3.5" />
                                                                         </button>
                                                                     </td>
                                                                     {Object.entries(row).filter(([key]) => key !== '_id' && key !== '_rowNumber').map(([field, value], cellIdx) => {
                                                                         const isEditing = editingCell?.rowIndex === rowIdx && editingCell?.field === field;
                                                                         return (
-                                                                            <td key={cellIdx} className="border-r border-gray-300 p-0">
+                                                                            <td 
+                                                                                key={cellIdx} 
+                                                                                className="border-b border-r border-slate-200/50 last:border-r-0 p-0"
+                                                                            >
                                                                                 {isEditing ? (
-                                                                                    <div className="flex items-center space-x-1 px-1 py-1">
+                                                                                    <div className="flex items-center gap-1.5 px-2 py-2">
                                                                                         <input
                                                                                             type="text"
                                                                                             value={editingCell.value ?? ''}
                                                                                             onChange={(e) => setEditingCell({ ...editingCell, value: e.target.value })}
-                                                                                            className="w-full px-2 py-1 border-2 border-blue-500 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                                            className="w-full px-3 py-1.5 border-2 border-blue-500 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
                                                                                             autoFocus
                                                                                             onKeyDown={(e) => {
                                                                                                 if (e.key === 'Enter') handleCellSave();
@@ -641,30 +686,36 @@ export default function BusinessRawDataPage() {
                                                                                         <button
                                                                                             onClick={handleCellSave}
                                                                                             disabled={savingCell}
-                                                                                            className="text-green-600 hover:text-green-800 disabled:opacity-50 font-bold"
+                                                                                            className="inline-flex items-center justify-center w-7 h-7 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-md disabled:opacity-50 transition-colors duration-150"
                                                                                             title="Save (Enter)"
                                                                                         >
-                                                                                            ✓
+                                                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                                                            </svg>
                                                                                         </button>
                                                                                         <button
                                                                                             onClick={handleCellCancel}
                                                                                             disabled={savingCell}
-                                                                                            className="text-red-600 hover:text-red-800 disabled:opacity-50 font-bold"
+                                                                                            className="inline-flex items-center justify-center w-7 h-7 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md disabled:opacity-50 transition-colors duration-150"
                                                                                             title="Cancel (Esc)"
                                                                                         >
-                                                                                            ✕
+                                                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                                                            </svg>
                                                                                         </button>
                                                                                     </div>
                                                                                 ) : (
                                                                                     <div
                                                                                         onClick={() => handleCellEdit(rowIdx, field, value)}
-                                                                                        className="cursor-pointer hover:bg-blue-100 px-3 py-2 text-xs text-gray-900 min-h-[32px] flex items-center"
+                                                                                        className="cursor-pointer px-4 py-2.5 text-sm text-slate-800 min-h-[42px] flex items-center font-medium hover:bg-blue-100/50 transition-colors duration-150"
                                                                                         title="Click to edit"
                                                                                     >
                                                                                         {value === '' || value === null || value === undefined ? (
-                                                                                            <span className="text-gray-300">—</span>
+                                                                                            <span className="text-slate-400 italic text-xs">—</span>
                                                                                         ) : (
-                                                                                            String(value)
+                                                                                            <span>
+                                                                                                {String(value)}
+                                                                                            </span>
                                                                                         )}
                                                                                     </div>
                                                                                 )}
@@ -677,22 +728,34 @@ export default function BusinessRawDataPage() {
                                                                             </table>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="mt-3 flex items-center justify-between px-2">
-                                                                        <p className="text-xs text-gray-600">
-                                                                            <span className="font-semibold">{sheet.documentCount}</span> rows total
-                                                                            {sheet.preview.length > 100 && <span> • Showing first 100</span>}
-                                                                        </p>
-                                                                        <p className="text-xs text-blue-600 italic">
-                                                                            💡 Click any cell to edit • Empty cells shown as <span className="text-gray-300">—</span>
-                                                                        </p>
+                                                                    <div className="mt-4 flex items-center justify-between px-2">
+                                                                        <div className="flex items-center gap-3">
+                                                                            <div className="flex items-center gap-2 text-xs bg-gradient-to-r from-blue-50 to-indigo-50 text-slate-700 px-3 py-2 rounded-lg border border-blue-200/50 shadow-sm">
+                                                                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                                                                <span className="font-bold">{sheet.documentCount.toLocaleString()}</span>
+                                                                                <span className="font-medium">total rows</span>
+                                                                            </div>
+                                                                            {sheet.preview.length > 100 && (
+                                                                                <div className="flex items-center gap-2 text-xs bg-gradient-to-r from-emerald-50 to-teal-50 text-slate-700 px-3 py-2 rounded-lg border border-emerald-200/50 shadow-sm">
+                                                                                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                                                                    <span className="font-bold">100</span>
+                                                                                    <span className="font-medium">showing</span>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="flex items-center gap-2 text-xs bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-700 px-3 py-2 rounded-lg border border-purple-200/50 shadow-sm">
+                                                                            <Edit className="h-3.5 w-3.5" />
+                                                                            <span className="font-semibold">Click any cell to edit</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             )}
                                                         </div>
                                                         <button
                                                             onClick={() => handleDeleteCollection(sheet.collectionName)}
-                                                            className="ml-4 text-red-600 hover:text-red-900 text-sm"
+                                                            className="ml-4 inline-flex items-center gap-1.5 px-3 py-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg text-sm font-medium transition-colors duration-150"
                                                         >
+                                                            <Trash2 className="h-3.5 w-3.5" />
                                                             Delete
                                                         </button>
                                                     </div>
@@ -700,10 +763,14 @@ export default function BusinessRawDataPage() {
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-center py-8">
-                                            <div className="text-gray-400 text-4xl mb-2">📊</div>
-                                            <h4 className="text-sm font-medium text-gray-900 mb-1">No data uploaded yet</h4>
-                                            <p className="text-xs text-gray-600">Upload Excel files to get started</p>
+                                        <div className="text-center py-20">
+                                            <div className="max-w-md mx-auto">
+                                                <div className="p-4 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 shadow-lg w-fit mx-auto mb-4">
+                                                    <FileSpreadsheet className="h-12 w-12 text-white" />
+                                                </div>
+                                                <h4 className="text-lg font-semibold text-slate-800 mb-2">No data uploaded yet</h4>
+                                                <p className="text-sm text-slate-600">Upload Excel files to get started</p>
+                                            </div>
                                         </div>
                                     )}
                             </CardContent>
@@ -711,20 +778,22 @@ export default function BusinessRawDataPage() {
                     </>
                 ) : (
                     <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 shadow-xl rounded-xl overflow-hidden">
-                        <CardContent className="pt-6">
-                                <div className="text-center">
-                                    <div className="text-gray-400 text-6xl mb-4">🏢</div>
-                                    <h3 className="text-lg font-medium text-slate-900 mb-2">Business not found</h3>
-                                    <p className="text-slate-600 mb-6">The business you're looking for doesn't exist or you don't have access to it.</p>
-                                    <Button
-                                        onClick={() => router.push('/businesses')}
-                                        className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
-                                    >
-                                        Back to Businesses
-                                    </Button>
+                        <CardContent className="pt-8 pb-8">
+                            <div className="text-center">
+                                <div className="p-4 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 shadow-lg w-fit mx-auto mb-6">
+                                    <Store className="h-12 w-12 text-white" />
                                 </div>
-                            </CardContent>
-                        </Card>
+                                <h3 className="text-xl font-semibold text-slate-800 mb-2">Business not found</h3>
+                                <p className="text-slate-600 mb-6 max-w-md mx-auto">The business you're looking for doesn't exist or you don't have access to it.</p>
+                                <Button
+                                    onClick={() => router.push('/businesses')}
+                                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
+                                >
+                                    Back to Businesses
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
                 )}
 
             </main>

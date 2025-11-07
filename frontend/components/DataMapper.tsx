@@ -282,28 +282,6 @@ export default function DataMapper({ businessId, onMappingComplete }: DataMapper
                         </div>
                     )}
 
-
-
-                    {/* Mapped Data (Supabase Tables) */}
-                    {mappingStatus.hasMappedData && (
-                        <div className="bg-white shadow rounded-lg p-6">
-                            <h3 className="text-base font-medium text-gray-900 mb-4">🗄️ Unified Database Tables</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {Object.entries(mappingStatus.supabaseStatus)
-                                    .filter(([_, status]) => status.hasData)
-                                    .map(([table, status]) => (
-                                        <div key={table} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                                            <div>
-                                                <div className="font-medium text-green-900">{table.replace('_', ' ')}</div>
-                                                <div className="text-sm text-green-600">{status.recordCount} records</div>
-                                            </div>
-                                            <div className="text-green-500">✅</div>
-                                        </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
                     {/* Action Buttons */}
                     <div className="bg-white shadow rounded-lg p-6">
                         <div className="flex flex-col sm:flex-row gap-4">
