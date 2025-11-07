@@ -91,7 +91,7 @@ export const SegmentCustomersModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-white via-white to-blue-50/30 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col border-2 border-slate-200/50">
+      <div className="bg-gradient-to-br from-white via-white to-blue-50/30 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col border-2 border-slate-200/50 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b-2 border-slate-200/50 bg-gradient-to-r from-white to-blue-50/30">
           <div>
@@ -131,7 +131,7 @@ export const SegmentCustomersModal = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 rounded-b-2xl bg-gradient-to-br from-white via-white to-blue-50/30">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -149,7 +149,7 @@ export const SegmentCustomersModal = ({
           ) : (
             <div className="space-y-4">
               {customers.map((customer) => (
-                <Card key={customer.customer_id} className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 hover:shadow-xl transition-all duration-300 group">
+                <Card key={customer.customer_id} className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 hover:shadow-xl transition-all duration-300 group rounded-xl">
                   <CardContent className="pt-5">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4 flex-1">

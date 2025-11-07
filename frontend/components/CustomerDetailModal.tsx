@@ -146,7 +146,7 @@ export const CustomerDetailModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-white via-white to-slate-50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col border-2 border-slate-200/50">
+      <div className="bg-gradient-to-br from-white via-white to-slate-50 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col border-2 border-slate-200/50 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b-2 border-slate-200/50 bg-gradient-to-r from-white to-slate-50">
           <div className="flex items-center gap-3">
@@ -164,7 +164,7 @@ export const CustomerDetailModal = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 rounded-b-2xl bg-gradient-to-br from-white via-white to-slate-50">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -177,7 +177,7 @@ export const CustomerDetailModal = ({
           ) : customer ? (
             <div className="space-y-6">
               {/* Customer Info */}
-              <Card>
+              <Card className="rounded-xl overflow-hidden">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -292,7 +292,7 @@ export const CustomerDetailModal = ({
 
               {/* Purchase Behavior & CLV */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 shadow-lg">
+                <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-slate-50 shadow-lg rounded-xl">
                   <CardHeader>
                     <CardTitle className="text-lg font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">Purchase Behavior</CardTitle>
                   </CardHeader>
@@ -329,7 +329,7 @@ export const CustomerDetailModal = ({
                 </Card>
 
                 {customer.clv && (
-                  <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-emerald-50/30 shadow-lg">
+                  <Card className="border-2 border-slate-200/50 bg-gradient-to-br from-white to-emerald-50/30 shadow-lg rounded-xl">
                     <CardHeader>
                       <CardTitle className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">Customer Lifetime Value</CardTitle>
                     </CardHeader>
@@ -360,7 +360,7 @@ export const CustomerDetailModal = ({
 
               {/* AI Insights */}
               {customer.insights && customer.insights.length > 0 && (
-                <Card className="border-2 border-purple-200/50 bg-gradient-to-br from-purple-50 to-white shadow-lg">
+                <Card className="border-2 border-purple-200/50 bg-gradient-to-br from-purple-50 to-white shadow-lg rounded-xl">
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 shadow-md">
@@ -393,7 +393,7 @@ export const CustomerDetailModal = ({
 
               {/* Product Recommendations */}
               {customer.recommendations && customer.recommendations.length > 0 && (
-                <Card>
+                <Card className="rounded-xl overflow-hidden">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                       <Package className="h-5 w-5 text-primary" />
@@ -420,7 +420,7 @@ export const CustomerDetailModal = ({
 
               {/* Recent Orders */}
               {customer.recent_orders && customer.recent_orders.length > 0 && (
-                <Card>
+                <Card className="rounded-xl overflow-hidden">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                       <ShoppingCart className="h-5 w-5 text-primary" />
@@ -450,7 +450,7 @@ export const CustomerDetailModal = ({
 
               {/* Spending Trends */}
               {customer.trends && customer.trends.length > 0 && (
-                <Card>
+                <Card className="rounded-xl overflow-hidden">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                       <TrendingUp className="h-5 w-5 text-primary" />
