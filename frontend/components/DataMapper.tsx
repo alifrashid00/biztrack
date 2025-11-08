@@ -174,6 +174,10 @@ export default function DataMapper({ businessId, onMappingComplete }: DataMapper
     };
 
     const clearMappedData = async () => {
+        if (!confirm('⚠️ Are you sure you want to clear all mapped data?\n\nThis will delete all data from the unified PostgreSQL database for this business.\n\nThis action cannot be undone!')) {
+            return;
+        }
+
         try {
             setClearing(true);
             setError(null);

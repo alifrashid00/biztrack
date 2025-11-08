@@ -239,7 +239,7 @@ export default function BusinessRawDataPage() {
     };
 
     const handleDeleteAllData = async () => {
-        if (!confirm('Are you sure you want to delete all uploaded data for this business? This action cannot be undone.')) {
+        if (!confirm(`⚠️ Are you sure you want to delete ALL uploaded data for "${business?.name}"?\n\nThis will permanently remove:\n• All Excel file collections\n• All raw data from MongoDB\n• All uploaded records\n\nThis action CANNOT be undone!`)) {
             return;
         }
 
@@ -267,7 +267,7 @@ export default function BusinessRawDataPage() {
     };
 
     const handleDeleteCollection = async (collectionName: string) => {
-        if (!confirm(`Are you sure you want to delete the collection "${collectionName}"? This action cannot be undone.`)) {
+        if (!confirm(`⚠️ Delete Collection: "${collectionName}"?\n\nThis will permanently delete:\n• The entire "${collectionName}" collection\n• All data records within it\n\nThis action CANNOT be undone!`)) {
             return;
         }
 
@@ -424,8 +424,10 @@ export default function BusinessRawDataPage() {
                         </div>
 
                         {/* Business Selector */}
-                        <div className="flex items-center gap-2">
-                            <Store className="h-5 w-5 text-slate-600" />
+                        <div className="flex items-center gap-3 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border-2 border-indigo-200/50 shadow-sm">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
+                                <Store className="h-4 w-4 text-white" />
+                            </div>
                             <select
                                 value={businessId}
                                 onChange={(e) => {
@@ -433,7 +435,7 @@ export default function BusinessRawDataPage() {
                                         router.push(`/businesses/${e.target.value}/raw-data`);
                                     }
                                 }}
-                                className="px-4 py-2 rounded-lg border-2 border-slate-200 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[200px] shadow-sm"
+                                className="px-3 py-1.5 rounded-lg border-0 bg-transparent text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[200px]"
                                 disabled={loadingBusinesses}
                             >
                                 {loadingBusinesses ? (
@@ -485,7 +487,7 @@ export default function BusinessRawDataPage() {
                                     <div className="flex gap-3">
                                         <Button
                                             onClick={() => router.push(`/businesses/${businessId}/unified-data`)}
-                                            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md"
+                                            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md hover:shadow-lg transition-all duration-300 font-semibold"
                                         >
                                             <Eye className="h-4 w-4 mr-2" />
                                             View Unified Data
@@ -514,7 +516,7 @@ export default function BusinessRawDataPage() {
                             </CardHeader>
                             <CardContent>
                                 <div className="flex items-center gap-4 mb-4">
-                                    <label className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer shadow-md">
+                                    <label className="inline-flex items-center px-5 py-2.5 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 cursor-pointer shadow-md hover:shadow-lg transition-all duration-300">
                                         <Upload className="h-4 w-4 mr-2" />
                                         <input
                                             type="file"
@@ -530,7 +532,7 @@ export default function BusinessRawDataPage() {
                                         <Button
                                             onClick={handleDeleteAllData}
                                             variant="outline"
-                                            className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300"
+                                            className="border-2 border-red-200 text-red-600 hover:bg-red-50 font-semibold transition-all duration-300"
                                         >
                                             <Trash2 className="h-4 w-4 mr-2" />
                                             Delete All Data
@@ -753,9 +755,9 @@ export default function BusinessRawDataPage() {
                                                         </div>
                                                         <button
                                                             onClick={() => handleDeleteCollection(sheet.collectionName)}
-                                                            className="ml-4 inline-flex items-center gap-1.5 px-3 py-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg text-sm font-medium transition-colors duration-150"
+                                                            className="px-3 py-1.5 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg border-2 border-red-200 transition-all duration-300"
                                                         >
-                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                            <Trash2 className="h-4 w-4 inline mr-1" />
                                                             Delete
                                                         </button>
                                                     </div>
@@ -784,11 +786,12 @@ export default function BusinessRawDataPage() {
                                     <Store className="h-12 w-12 text-white" />
                                 </div>
                                 <h3 className="text-xl font-semibold text-slate-800 mb-2">Business not found</h3>
-                                <p className="text-slate-600 mb-6 max-w-md mx-auto">The business you're looking for doesn't exist or you don't have access to it.</p>
+                                <p className="text-sm text-slate-600 mb-6 max-w-md mx-auto">The business you're looking for doesn't exist or you don't have access to it.</p>
                                 <Button
                                     onClick={() => router.push('/businesses')}
-                                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
+                                    className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-md hover:shadow-lg transition-all duration-300 font-semibold"
                                 >
+                                    <ArrowLeft className="h-4 w-4 mr-2" />
                                     Back to Businesses
                                 </Button>
                             </div>

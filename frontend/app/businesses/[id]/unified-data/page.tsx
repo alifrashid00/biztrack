@@ -206,8 +206,10 @@ export default function UnifiedBusinessDataPage() {
                         </div>
 
                         {/* Business Selector */}
-                        <div className="flex items-center gap-2">
-                            <Store className="h-5 w-5 text-slate-600" />
+                        <div className="flex items-center gap-3 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border-2 border-indigo-200/50 shadow-sm">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
+                                <Store className="h-4 w-4 text-white" />
+                            </div>
                             <select
                                 value={businessId}
                                 onChange={(e) => {
@@ -215,7 +217,7 @@ export default function UnifiedBusinessDataPage() {
                                         router.push(`/businesses/${e.target.value}/unified-data`);
                                     }
                                 }}
-                                className="px-4 py-2 rounded-lg border-2 border-slate-200 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[200px] shadow-sm"
+                                className="px-3 py-1.5 rounded-lg border-0 bg-transparent text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[200px]"
                                 disabled={loadingBusinesses}
                             >
                                 {loadingBusinesses ? (
@@ -267,7 +269,7 @@ export default function UnifiedBusinessDataPage() {
                                     <div className="flex gap-3">
                                         <Button
                                             onClick={() => router.push(`/businesses/${businessId}/raw-data`)}
-                                            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
+                                            className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300 font-semibold"
                                         >
                                             <Database className="h-4 w-4 mr-2" />
                                             View Raw Data
@@ -430,7 +432,7 @@ export default function UnifiedBusinessDataPage() {
                                                 <p className="text-sm text-slate-600 mb-6">No tables were found in the PostgreSQL database for this business</p>
                                                 <Button
                                                     onClick={() => router.push(`/businesses/${businessId}/raw-data`)}
-                                                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
+                                                    className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300 font-semibold"
                                                 >
                                                     <Database className="h-4 w-4 mr-2" />
                                                     View Raw Data
@@ -452,8 +454,9 @@ export default function UnifiedBusinessDataPage() {
                                 <p className="text-slate-600 mb-6 max-w-md mx-auto">The business you're looking for doesn't exist or you don't have access to it.</p>
                                 <Button
                                     onClick={() => router.push('/businesses')}
-                                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md"
+                                    className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-md hover:shadow-lg transition-all duration-300 font-semibold"
                                 >
+                                    <ArrowLeft className="h-4 w-4 mr-2" />
                                     Back to Businesses
                                 </Button>
                             </div>
