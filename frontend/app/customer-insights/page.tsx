@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Navigation } from "@/components/Navigation";
 import { CustomerInsights } from "@/components/CustomerInsights";
 import { CustomerDetailModal } from "@/components/CustomerDetailModal";
 import { SegmentCustomersModal } from "@/components/SegmentCustomersModal";
 import { AtRiskCustomersModal } from "@/components/AtRiskCustomersModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Users, Star, TrendingDown, Heart, Loader2, Store, RefreshCw, Mail, Eye, Edit, Sparkles } from "lucide-react";
+import { Users, Star, TrendingDown, Heart, Loader2, RefreshCw, Mail, Eye, Edit, Sparkles } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 interface Business {
@@ -260,44 +261,12 @@ const CustomerInsightsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40">
-      <header className="border-b-2 border-slate-200/50 bg-white/80 backdrop-blur-xl sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard")} className="hover:bg-blue-50">
-                <ArrowLeft className="h-5 w-5 text-slate-600" />
-              </Button>
-              <div className="relative">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-600 to-blue-600 flex items-center justify-center shadow-lg">
-                  <Users className="h-5 w-5 text-white" />
-                </div>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-700 to-blue-700 bg-clip-text text-transparent">Customer Intelligence</h1>
-                <p className="text-sm font-medium text-slate-600">RFM segmentation & insights</p>
-              </div>
-            </div>
-            
-            {/* Business Selector */}
-            {businesses.length > 0 && (
-              <div className="flex items-center gap-2 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border-2 border-slate-200/50 shadow-sm">
-                <Store className="h-5 w-5 text-slate-600" />
-                <select
-                  value={selectedBusiness}
-                  onChange={(e) => setSelectedBusiness(e.target.value)}
-                  className="bg-transparent text-slate-900 font-medium focus:outline-none min-w-[200px]"
-                >
-                  {businesses.map((business) => (
-                    <option key={business.id} value={business.id}>
-                      {business.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+      <Navigation
+        selectedBusiness={selectedBusiness}
+        businesses={businesses}
+        onBusinessChange={setSelectedBusiness}
+        showBusinessSelector={true}
+      />
 
       <main className="container mx-auto px-4 py-10 space-y-10">
         {error && (

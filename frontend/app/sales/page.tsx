@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Plus, Minus, ShoppingCart, User, Package, Store, Loader2, X } from "lucide-react";
+import { Plus, Minus, ShoppingCart, User, Package, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
 import { SearchableProductSelect } from "@/components/SearchableProductSelect";
@@ -496,46 +497,19 @@ function RecordSalePageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with Business Selector */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard")}>
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Record Sale</h1>
-                <p className="text-sm text-muted-foreground">Create a new sales transaction</p>
-              </div>
-            </div>
-
-            {/* Business Selector */}
-            <div className="flex items-center gap-2">
-              <Store className="h-5 w-5 text-muted-foreground" />
-              <select
-                value={selectedBusiness}
-                onChange={(e) => {
-                  const newBusinessId = e.target.value;
-                  if (newBusinessId !== selectedBusiness) {
-                    // Store the selected business ID before reload
-                    localStorage.setItem('selectedBusinessId', newBusinessId);
-                    setSelectedBusiness(newBusinessId);
-                    window.location.reload();
-                  }
-                }}
-                className="px-4 py-2 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 min-w-[200px]"
-              >
-                {businesses.map((business) => (
-                  <option key={business.id} value={business.id}>
-                    {business.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Navigation */}
+      <Navigation
+        selectedBusiness={selectedBusiness}
+        businesses={businesses}
+        onBusinessChange={(businessId) => {
+          if (businessId !== selectedBusiness) {
+            localStorage.setItem('selectedBusinessId', businessId);
+            setSelectedBusiness(businessId);
+            window.location.reload();
+          }
+        }}
+        showBusinessSelector={true}
+      />
 
       <div className="max-w-6xl mx-auto p-4">
         {!selectedBusiness ? (

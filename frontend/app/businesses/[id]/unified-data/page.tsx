@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { Navigation } from '@/components/Navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Store, Database, FileSpreadsheet, Loader2, Eye } from "lucide-react";
+import { Store, Database, FileSpreadsheet, Loader2, Eye } from "lucide-react";
 
 interface Business {
     id: string;
@@ -186,54 +187,17 @@ export default function UnifiedBusinessDataPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            {/* Header */}
-            <header className="bg-white/80 backdrop-blur-sm border-b-2 border-slate-200/50 shadow-sm sticky top-0 z-50">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                            <Button variant="ghost" size="icon" onClick={() => router.push(`/businesses/${businessId}`)}>
-                                <ArrowLeft className="h-5 w-5" />
-                            </Button>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 shadow-lg">
-                                    <Database className="h-6 w-6 text-white" />
-                                </div>
-                                <div>
-                                    <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">Unified Data</h1>
-                                    <p className="text-sm text-slate-600 font-medium">PostgreSQL database tables (read-only)</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Business Selector */}
-                        <div className="flex items-center gap-3 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border-2 border-indigo-200/50 shadow-sm">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
-                                <Store className="h-4 w-4 text-white" />
-                            </div>
-                            <select
-                                value={businessId}
-                                onChange={(e) => {
-                                    if (e.target.value && e.target.value !== businessId) {
-                                        router.push(`/businesses/${e.target.value}/unified-data`);
-                                    }
-                                }}
-                                className="px-3 py-1.5 rounded-lg border-0 bg-transparent text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[200px]"
-                                disabled={loadingBusinesses}
-                            >
-                                {loadingBusinesses ? (
-                                    <option>Loading...</option>
-                                ) : (
-                                    businesses.map((biz) => (
-                                        <option key={biz.id} value={biz.id}>
-                                            {biz.name}
-                                        </option>
-                                    ))
-                                )}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            {/* Navigation */}
+            <Navigation
+                selectedBusiness={businessId}
+                businesses={businesses}
+                onBusinessChange={(id) => {
+                    if (id && id !== businessId) {
+                        router.push(`/businesses/${id}/unified-data`);
+                    }
+                }}
+                showBusinessSelector={true}
+            />
 
             <main className="container mx-auto px-4 py-8 space-y-6">
                 {error && (
@@ -456,7 +420,6 @@ export default function UnifiedBusinessDataPage() {
                                     onClick={() => router.push('/businesses')}
                                     className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-md hover:shadow-lg transition-all duration-300 font-semibold"
                                 >
-                                    <ArrowLeft className="h-4 w-4 mr-2" />
                                     Back to Businesses
                                 </Button>
                             </div>

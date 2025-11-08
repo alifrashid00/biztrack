@@ -3,22 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { Navigation } from "@/components/Navigation";
 import { MetricsCard } from "@/components/MetricsCard";
 import { QuickActions } from "@/components/QuickActions";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ForecastChart } from "@/components/ForecastChart";
 import { CashFlowPrediction } from "@/components/CashFlowPrediction";
-import { DollarSign, TrendingUp, Package, Users, Menu, Sparkles, Bell, Settings, Store, Loader2, User, LogOut, HelpCircle, FileText, BarChart3 } from "lucide-react";
+import { DollarSign, TrendingUp, Package, Users, Sparkles, Store, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface Business {
     id: string;
@@ -146,11 +139,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    router.push("/auth/login");
-  };
-
   if (authLoading || loadingBusinesses) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -160,104 +148,13 @@ const Dashboard = () => {
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40">
-      {/* Header */}
-      <header className="border-b-2 border-slate-200/50 bg-white/80 backdrop-blur-xl sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-700 flex items-center justify-center shadow-lg">
-                  <TrendingUp className="h-7 w-7 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1">
-                  <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
-                </div>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent">
-                  BizTrack
-                </h1>
-                <p className="text-sm font-medium text-slate-600">
-                  AI-Powered Business Intelligence
-                </p>
-              </div>
-            </div>
-            
-            {/* Business Selector - Right Side */}
-            <div className="flex items-center gap-3">
-              {businesses.length > 0 ? (
-                <div className="flex items-center gap-2 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border-2 border-slate-200/50 shadow-sm">
-                  <Store className="h-5 w-5 text-slate-600" />
-                  <select
-                    value={selectedBusiness}
-                    onChange={(e) => setSelectedBusiness(e.target.value)}
-                    className="bg-transparent text-slate-900 font-medium focus:outline-none min-w-[200px]"
-                  >
-                    {businesses.map((business) => (
-                      <option key={business.id} value={business.id}>
-                        {business.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 text-sm text-slate-500">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Loading businesses...</span>
-                </div>
-              )}
-              
-              <Button variant="ghost" size="icon" className="relative hover:bg-blue-50">
-                <Bell className="h-5 w-5 text-slate-600" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-gradient-to-br from-red-600 to-rose-600 border-2 border-white">
-                  3
-                </Badge>
-              </Button>
-              <Button variant="ghost" size="icon" className="hover:bg-blue-50">
-                <Settings className="h-5 w-5 text-slate-600" />
-              </Button>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hover:bg-blue-50">
-                    <Menu className="h-5 w-5 text-slate-600" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push("/profile")}>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  {/* <DropdownMenuItem onClick={() => router.push("/businesses")}>
-                    <Store className="mr-2 h-4 w-4" />
-                    <span>My Businesses</span>
-                  </DropdownMenuItem> */}
-                  <DropdownMenuItem onClick={() => router.push("/dashboard")}>
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    <span>Analytics</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push("/docs")}>
-                    <FileText className="mr-2 h-4 w-4" />
-                    <span>Documentation</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/help")}>
-                    <HelpCircle className="mr-2 h-4 w-4" />
-                    <span>Help & Support</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Navigation */}
+      <Navigation
+        selectedBusiness={selectedBusiness}
+        businesses={businesses}
+        onBusinessChange={setSelectedBusiness}
+        showBusinessSelector={true}
+      />
 
       {/* Hero Section */}
       <div className="relative h-64 overflow-hidden">

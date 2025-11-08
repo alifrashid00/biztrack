@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Package, AlertTriangle, TrendingDown, PackageCheck, Loader2, Store, Search, Filter, Sparkles, Edit, Check, ChevronsUpDown } from "lucide-react";
+import { Package, AlertTriangle, TrendingDown, PackageCheck, Loader2, Search, Filter, Sparkles, Edit, Check, ChevronsUpDown, ShoppingCart, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import "./inventory.css";
@@ -334,51 +335,12 @@ const InventoryPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-      <header className="bg-gradient-to-r from-white via-white to-slate-50 border-b-2 border-slate-200/50 shadow-sm sticky top-0 z-10 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => router.push("/dashboard")} className="hover:bg-slate-100">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 shadow-lg">
-                  <Package className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">Inventory Management</h1>
-                  <p className="text-sm text-slate-600 font-medium">Smart stock optimization</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Business Selector */}
-            <div className="flex items-center gap-2">
-              <Store className="h-5 w-5 text-slate-600" />
-              <select
-                value={selectedBusiness}
-                onChange={(e) => setSelectedBusiness(e.target.value)}
-                className="px-4 py-2 rounded-lg border-2 border-slate-200 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[200px] shadow-sm"
-              >
-                {businesses.map((business) => (
-                  <option key={business.id} value={business.id}>
-                    {business.name}
-                  </option>
-                ))}
-              </select>
-              {selectedBusiness && (
-                <Button
-                  onClick={() => router.push(`/inventory/optimize?business=${selectedBusiness}`)}
-                  className="ml-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg"
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  AI Optimize
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navigation
+        selectedBusiness={selectedBusiness}
+        businesses={businesses}
+        onBusinessChange={setSelectedBusiness}
+        showBusinessSelector={true}
+      />
 
       <main className="container mx-auto px-4 py-8 space-y-6">
         {error && (
@@ -483,30 +445,57 @@ const InventoryPage = () => {
                     <CardTitle className="text-xl font-bold text-slate-800">Current Inventory</CardTitle>
                     <CardDescription className="text-slate-600 mt-1">View and manage your product inventory</CardDescription>
                   </div>
-                  {selectedProducts.length > 0 && (
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-slate-700 bg-indigo-50 px-3 py-1.5 rounded-lg">
-                        {selectedProducts.length} product{selectedProducts.length !== 1 ? 's' : ''} selected
-                      </span>
-                      <div className="flex gap-2">
-                        <Button 
-                          onClick={handleMarkForSale} 
-                          size="sm" 
-                          className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md"
+                  <div className="flex items-center gap-3">
+                    {selectedBusiness && (
+                      <>
+                        <Button
+                          onClick={() => router.push(`/sales?business=${selectedBusiness}`)}
+                          className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
                         >
-                          Mark for Sale
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          Record Sale
                         </Button>
-                        <Button 
-                          onClick={handleMarkForPurchase} 
-                          size="sm" 
-                          variant="outline"
-                          className="border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300"
+                        <Button
+                          onClick={() => router.push(`/purchase-orders?business=${selectedBusiness}`)}
+                          className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg"
                         >
-                          Mark for Purchase
+                          <ShoppingBag className="h-4 w-4 mr-2" />
+                          Record Purchase
                         </Button>
-                      </div>
-                    </div>
-                  )}
+                        <Button
+                          onClick={() => router.push(`/inventory/optimize?business=${selectedBusiness}`)}
+                          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg"
+                        >
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          AI Optimize
+                        </Button>
+                      </>
+                    )}
+                    {selectedProducts.length > 0 && (
+                      <>
+                        <span className="text-sm font-medium text-slate-700 bg-indigo-50 px-3 py-1.5 rounded-lg">
+                          {selectedProducts.length} product{selectedProducts.length !== 1 ? 's' : ''} selected
+                        </span>
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={handleMarkForSale} 
+                            size="sm" 
+                            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md"
+                          >
+                            Mark for Sale
+                          </Button>
+                          <Button 
+                            onClick={handleMarkForPurchase} 
+                            size="sm" 
+                            variant="outline"
+                            className="border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300"
+                          >
+                            Mark for Purchase
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
                 
                 {/* Search and Filters */}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Plus, Minus, ShoppingCart, User, Package, Store, Loader2, X } from "lucide-react";
+import { Plus, Minus, ShoppingCart, User, Package, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth-context";
 
@@ -667,72 +668,27 @@ function RecordPurchasePageContent() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" onClick={() => router.push('/dashboard')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Record Purchase Order</h1>
-            <p className="text-muted-foreground">Record purchases from suppliers and add to inventory</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Business Selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Select Business</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <select
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            value={selectedBusiness}
-            onChange={(e) => {
-              const newBusinessId = e.target.value;
-              setSelectedBusiness(newBusinessId);
-              localStorage.setItem('selectedBusinessId', newBusinessId);
-              // Clear all current data and reload
-              setSuppliers([]);
-              setProducts([]);
-              setCategories([]);
-              setBrands([]);
-              setCart([]);
-              setPurchaseHistory([]);
-              setSelectedSupplierId('');
-              setIsNewSupplier(false);
-              setNewSupplierData({
-                supplier_name: '',
-                contact_person: '',
-                email: '',
-                phone: '',
-                address: ''
-              });
-              setSelectedCategoryId('');
-              setIsNewCategory(false);
-              setNewCategoryData({ category_name: '', description: '' });
-              setSelectedBrandId('');
-              setIsNewBrand(false);
-              setNewBrandData({ brand_name: '', description: '', unit_price: 0 });
-              setProductName('');
-              setQuantity(1);
-              setUnitCost(0);
-              setNotes('');
-              setTotal(0);
-            }}
-          >
-            <option value="">Select a Business</option>
-            {businesses.map((business) => (
-              <option key={business.id} value={business.id}>
-                {business.name}
-              </option>
-            ))}
-          </select>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <Navigation
+        selectedBusiness={selectedBusiness}
+        businesses={businesses}
+        onBusinessChange={(businessId) => {
+          setSelectedBusiness(businessId);
+          localStorage.setItem('selectedBusinessId', businessId);
+          // Clear all current data and reload
+          setSuppliers([]);
+          setProducts([]);
+          setBrands([]);
+          setCategories([]);
+          setCart([]);
+          setPurchaseHistory([]);
+          window.location.reload();
+        }}
+        showBusinessSelector={true}
+      />
+      
+      <div className="container mx-auto p-6 space-y-6">
 
       {selectedBusiness && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1169,6 +1125,7 @@ function RecordPurchasePageContent() {
           </Card>
         </div>
       )}
+      </div>
     </div>
   );
 }

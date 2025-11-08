@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -319,8 +320,15 @@ export default function ForecastPage() {
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-			<header className="border-b border-border bg-white/80 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
-				<div className="container mx-auto px-4 py-6 flex items-center justify-between gap-4">
+			<Navigation
+				selectedBusiness={selectedBusiness}
+				businesses={businesses}
+				onBusinessChange={setSelectedBusiness}
+				showBusinessSelector={true}
+			/>
+
+			<div className="container mx-auto px-4 py-6">
+				<div className="flex items-center justify-between gap-4 mb-6">
 					<div className="flex items-center gap-3">
 						<div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg">
 							<TrendingUp className="h-6 w-6 text-white" />
@@ -341,7 +349,7 @@ export default function ForecastPage() {
 							<span>Bangladesh</span>
 						</div>
 
-						{/* Generate AI Button in Header */}
+						{/* Generate AI Button */}
 						<Dialog open={showModal} onOpenChange={setShowModal}>
 							<DialogTrigger asChild>
 								<button
@@ -474,7 +482,7 @@ export default function ForecastPage() {
 						</select>
 					</div>
 				</div>
-			</header>
+			</div>
 
 			<main className="container mx-auto px-4 py-8 space-y-6">
 				{error && (

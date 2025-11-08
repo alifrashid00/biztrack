@@ -3,6 +3,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/auth-context';
+import { Navigation } from "@/components/Navigation";
+import { Sparkles } from "lucide-react";
 
 // Icons components
 const DollarIcon = () => (
@@ -320,53 +322,36 @@ export default function CashflowPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg">
-                <DollarIcon />
-              </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                Cashflow Dashboard
-              </h1>
+      <Navigation
+        selectedBusiness={businessId || ''}
+        businesses={businesses}
+        onBusinessChange={(id) => changeBusiness(id)}
+        showBusinessSelector={true}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg">
+              <DollarIcon />
             </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={generateAIReport}
-                disabled={fetchingReport || !businessId}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl disabled:opacity-50 hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed font-medium"
-              >
-                <SparklesIcon />
-                {fetchingReport ? 'Generating…' : 'Generate AI Report'}
-              </button>
-              <div className="flex items-center gap-3 bg-white/70 backdrop-blur-sm rounded-xl px-4 py-2 border border-gray-200/50">
-                <BuildingIcon />
-                <label className="text-sm font-medium text-gray-600">Business:</label>
-                <select
-                  disabled={bizLoading || businesses.length === 0}
-                  value={businessId || ''}
-                  onChange={e => changeBusiness(e.target.value)}
-                  className="border-0 bg-transparent text-sm font-medium focus:ring-2 focus:ring-blue-500 rounded-lg px-2 py-1"
-                >
-                  <option value="" disabled>{bizLoading ? 'Loading...' : 'Select business'}</option>
-                  {businesses.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                </select>
-                <button
-                  onClick={() => router.push('/businesses')}
-                  className="flex items-center gap-1 text-indigo-600 text-sm hover:text-indigo-800 font-medium transition-colors"
-                >
-                  <CogIcon />
-                  Manage
-                </button>
-              </div>
-            </div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              Cashflow Dashboard
+            </h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={generateAIReport}
+              disabled={fetchingReport || !businessId}
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl disabled:opacity-50 hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed font-medium"
+            >
+              <Sparkles className="h-4 w-4" />
+              {fetchingReport ? 'Generating…' : 'Generate AI Report'}
+            </button>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        <div className="space-y-6">
         {activeBizName && (
           <div className="flex items-center gap-2 text-sm text-gray-600 bg-white/60 backdrop-blur-sm rounded-full px-4 py-2 w-fit">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -621,6 +606,7 @@ export default function CashflowPage() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
